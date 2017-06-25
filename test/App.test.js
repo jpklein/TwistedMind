@@ -7,3 +7,8 @@ it('renders without crashing', () => {
   const rendered = renderer.create(<App />).toJSON();
   expect(rendered).toBeTruthy();
 });
+
+it('renders default messages', () => {
+  const rendered = renderer.create(<App />).toJSON();
+  expect(rendered).toMatchSnapshot();
+});
