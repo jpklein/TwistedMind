@@ -1,5 +1,13 @@
 This project was bootstrapped with [Create React Native App](https://github.com/react-community/create-react-native-app).
 
+To test (macOS Sierra):
+* Follow [these instructions](https://gist.github.com/brennanMKE/f6aa55b452ecda2f4c7a379e21647c88) to update your environment settings and install watchman from brew
+* Run the test suite
+```
+> cd TwistedMind
+> npm test
+```
+
 Below you'll find information about performing common tasks. The most recent version of this guide is available [here](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md).
 
 ## Table of Contents
