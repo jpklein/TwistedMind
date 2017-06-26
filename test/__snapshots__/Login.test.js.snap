@@ -1,0 +1,217 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders default messages 1`] = `
+<RCTScrollView
+  style={
+    Object {
+      "backgroundColor": "#E1D7D8",
+      "flexDirection": "column",
+      "padding": 30,
+    }
+  }
+>
+  <View>
+    <View
+      style={
+        Object {
+          "marginBottom": 20,
+        }
+      }
+    />
+    <View
+      style={
+        Object {
+          "marginBottom": 20,
+        }
+      }
+    >
+      <Text
+        accessible={true}
+        allowFontScaling={true}
+        disabled={false}
+        ellipsizeMode="tail"
+        style={
+          Object {
+            "color": "#595856",
+            "fontFamily": "sans serif",
+            "fontSize": 20,
+            "marginBottom": 10,
+          }
+        }
+      >
+        Username or Email
+      </Text>
+      <TextInput
+        autoCapitalize="none"
+        autoFocus={true}
+        keyboardType="email-address"
+        style={
+          Object {
+            "backgroundColor": "#FFF",
+            "fontSize": 30,
+            "height": 80,
+          }
+        }
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "marginBottom": 20,
+        }
+      }
+    >
+      <Text
+        accessible={true}
+        allowFontScaling={true}
+        disabled={false}
+        ellipsizeMode="tail"
+        style={
+          Object {
+            "color": "#595856",
+            "fontFamily": "sans serif",
+            "fontSize": 20,
+            "marginBottom": 10,
+          }
+        }
+      >
+        Password
+      </Text>
+      <TextInput
+        secureTextEntry={true}
+        style={
+          Object {
+            "backgroundColor": "#FFF",
+            "fontSize": 30,
+            "height": 80,
+          }
+        }
+      />
+    </View>
+    <View
+      style={
+        Object {
+          "marginTop": 100,
+        }
+      }
+    >
+      <View
+        style={
+          Object {
+            "marginBottom": 20,
+          }
+        }
+      >
+        <View
+          accessibilityComponentType={undefined}
+          accessibilityLabel={undefined}
+          accessibilityTraits={undefined}
+          accessible={true}
+          hasTVPreferredFocus={undefined}
+          hitSlop={undefined}
+          isTVSelectable={true}
+          nativeID={undefined}
+          onLayout={undefined}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Array [
+              Object {
+                "backgroundColor": "transparent",
+              },
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "padding": 20,
+                },
+                Object {
+                  "backgroundColor": "#34A853",
+                },
+              ],
+            ]
+          }
+          testID={undefined}
+          tvParallaxProperties={undefined}
+        >
+          <Text
+            accessible={true}
+            allowFontScaling={true}
+            disabled={false}
+            ellipsizeMode="tail"
+            style={
+              Object {
+                "color": "#FFF",
+                "fontSize": 20,
+              }
+            }
+          >
+            Sign In
+          </Text>
+        </View>
+      </View>
+      <View
+        style={
+          Object {
+            "marginBottom": 20,
+          }
+        }
+      >
+        <View
+          accessibilityComponentType={undefined}
+          accessibilityLabel={undefined}
+          accessibilityTraits={undefined}
+          accessible={true}
+          hasTVPreferredFocus={undefined}
+          hitSlop={undefined}
+          isTVSelectable={true}
+          nativeID={undefined}
+          onLayout={undefined}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Array [
+              Object {
+                "backgroundColor": "transparent",
+              },
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "justifyContent": "center",
+                  "padding": 20,
+                },
+                undefined,
+              ],
+            ]
+          }
+          testID={undefined}
+          tvParallaxProperties={undefined}
+        >
+          <Text
+            accessible={true}
+            allowFontScaling={true}
+            disabled={false}
+            ellipsizeMode="tail"
+            style={
+              Object {
+                "color": "#595856",
+                "fontSize": 20,
+              }
+            }
+          >
+            CANCEL
+          </Text>
+        </View>
+      </View>
+    </View>
+  </View>
+</RCTScrollView>
+`;
