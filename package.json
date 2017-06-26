@@ -18,7 +18,8 @@
   },
   "jest": {
     "preset": "jest-expo",
-    "testRegex": "/test/.*test.js$"
+    "testRegex": "/test/.*test.js$",
+    "setupFiles": ["./test/_setup/autoFocusWorkaround.js"]
   },
   "dependencies": {
     "expo": "^18.0.3",
