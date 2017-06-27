@@ -2,9 +2,9 @@ import React from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 // import Icon from 'react-native-vector-icons/FontAwesome';
 
-import Container from './components/Container';
-import Button from './components/Button';
-import Label from './components/Label';
+import Container from '../src/components/Container';
+import Button from '../src/components/Button';
+import Label from '../src/components/Label';
 
 export default class Login extends React.Component {
   press () {
