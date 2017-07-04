@@ -3,8 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
+    "enzyme": "^2.9.1",
     "jest-expo": "~18.0.0",
     "npm": "^4.6.1",
+    "react-addons-test-utils": "^15.6.0",
+    "react-dom": "^15.6.1",
+    "react-native-mock": "^0.3.1",
     "react-native-scripts": "0.0.40",
     "react-test-renderer": "16.0.0-alpha.12"
   },
@@ -19,7 +23,9 @@
   "jest": {
     "preset": "jest-expo",
     "testRegex": "/test/.*test.js$",
-    "setupFiles": ["./test/_setup/autoFocusWorkaround.js"]
+    "setupFiles": [
+      "./test/_setup/autoFocusWorkaround.js"
+    ]
   },
   "dependencies": {
     "expo": "^18.0.3",
