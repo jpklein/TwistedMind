@@ -1,22 +1,22 @@
-import React from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-// import Icon from 'react-native-vector-icons/FontAwesome';
+import React from 'react'
+import { ScrollView, StyleSheet, TextInput, View } from 'react-native'
+// import Icon from 'react-native-vector-icons/FontAwesome'
 
-import Container from '../src/components/Container';
-import Button from '../src/components/Button';
-import Label from '../src/components/Label';
+import Container from '../src/components/Container'
+import Button from '../src/components/Button'
+import Label from '../src/components/Label'
 
 export default class Login extends React.Component {
   press () {
     // @todo Handles login actions
-  };
+  }
 
-  render() {
+  render () {
     return (
       <ScrollView style={styles.scroll}>
         <Container>
           {/* <Button
-            label="Forgot Login/Pass"
+            label='Forgot Login/Pass'
             styles={{
               button: styles.alignRight,
               label: styles.label
@@ -25,40 +25,42 @@ export default class Login extends React.Component {
           /> */}
         </Container>
         <Container>
-          <Label text="Username or Email" />
+          <Label text='Username or Email' />
           <TextInput
             autoCapitalize='none'
-            autoFocus={true}
+            autoFocus
             keyboardType='email-address'
             style={styles.textInput}
           />
         </Container>
         <Container>
-          <Label text="Password" />
+          <Label text='Password' />
           <TextInput
-            secureTextEntry={true}
+            secureTextEntry
             style={styles.textInput}
           />
         </Container>
         <View style={styles.footer}>
-            <Container>
-                <Button
-                    label="Sign In"
-                    styles={{
-                      button: styles.primaryButton,
-                      label: styles.buttonWhiteText
-                    }}
-                    onPress={this.press.bind(this)} />
-            </Container>
-            <Container>
-                <Button
-                    label="CANCEL"
-                    styles={{label: styles.buttonBlackText}}
-                    onPress={this.press.bind(this)} />
-            </Container>
+          <Container>
+            <Button
+              label='Sign In'
+              styles={{
+                button: styles.primaryButton,
+                label: styles.buttonWhiteText
+              }}
+              onPress={this.press.bind(this)}
+            />
+          </Container>
+          <Container>
+            <Button
+              label='CANCEL'
+              styles={{label: styles.buttonBlackText}}
+              onPress={this.press.bind(this)}
+            />
+          </Container>
         </View>
       </ScrollView>
-    );
+    )
   }
 }
 
@@ -76,22 +78,22 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end'
   },
   textInput: {
-      height: 80,
-      fontSize: 30,
-      backgroundColor: '#FFF'
+    height: 80,
+    fontSize: 30,
+    backgroundColor: '#fff'
   },
   buttonWhiteText: {
-      fontSize: 20,
-      color: '#FFF',
+    fontSize: 20,
+    color: '#fff'
   },
   buttonBlackText: {
-      fontSize: 20,
-      color: '#595856'
+    fontSize: 20,
+    color: '#595856'
   },
   primaryButton: {
-      backgroundColor: '#34A853'
+    backgroundColor: '#34A853'
   },
   footer: {
-     marginTop: 100
+    marginTop: 100
   }
-});
+})

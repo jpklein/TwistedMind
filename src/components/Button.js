@@ -1,18 +1,17 @@
-import React from 'react';
-import { StyleSheet, Text, TouchableHighlight } from 'react-native';
+import React from 'react'
+import { StyleSheet, Text, TouchableHighlight } from 'react-native'
 
 const Button = (props) => {
-
-  function getContent(){
-    if(props.children){
-      return props.children;
+  function getContent () {
+    if (props.children) {
+      return props.children
     }
     return <Text style={props.styles.label}>{props.label}</Text>
   }
 
   return (
     <TouchableHighlight
-      underlayColor="#ccc"
+      underlayColor='#ccc'
       onPress={props.onPress}
       style={[
         props.noDefaultStyles ? '' : styles.button,
@@ -21,7 +20,7 @@ const Button = (props) => {
     >
       {getContent()}
     </TouchableHighlight>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -29,7 +28,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20
-  },
-});
+  }
+})
 
-export default Button;
+export default Button
