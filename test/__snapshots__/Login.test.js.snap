@@ -33,7 +33,7 @@ exports[`renders default messages 1`] = `
         style={
           Object {
             "color": "#595856",
-            "fontFamily": "sans serif",
+            "fontFamily": "Arial",
             "fontSize": 20,
             "marginBottom": 10,
           }
@@ -69,7 +69,7 @@ exports[`renders default messages 1`] = `
         style={
           Object {
             "color": "#595856",
-            "fontFamily": "sans serif",
+            "fontFamily": "Arial",
             "fontSize": 20,
             "marginBottom": 10,
           }
