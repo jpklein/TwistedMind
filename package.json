@@ -25,10 +25,12 @@
     ]
   },
   "dependencies": {
+    "crypto-js": "^3.1.9-1",
     "expo": "^18.0.3",
     "gamesparks-sdk": "^1.0.0",
     "react": "16.0.0-alpha.12",
     "react-native": "^0.45.1",
-    "redux-saga": "^0.15.4"
+    "redux-saga": "^0.15.4",
+    "ws": "^3.0.0"
   }
 }
