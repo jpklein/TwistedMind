@@ -19,12 +19,15 @@
   "jest": {
     "preset": "jest-expo",
     "testRegex": "/test/.*test.js$",
-    "setupFiles": ["./test/_setup/autoFocusWorkaround.js"]
+    "setupFiles": [
+      "./test/__setup__/autoFocusWorkaround.js"
+    ]
   },
   "dependencies": {
     "expo": "^18.0.3",
     "gamesparks-sdk": "^1.0.0",
     "react": "16.0.0-alpha.12",
-    "react-native": "^0.45.1"
+    "react-native": "^0.45.1",
+    "redux-saga": "^0.15.4"
   }
 }
