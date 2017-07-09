@@ -38,9 +38,9 @@ node_modules/react-native/flow
 flow/
 
 [options]
-module.system=haste
-
 emoji=true
+
+module.system=haste
 
 experimental.strict_type_args=true
 
