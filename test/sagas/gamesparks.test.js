@@ -1,50 +1,82 @@
-import GameSparks from 'gamesparks-sdk';
+import CryptoJS from 'crypto-js'
+import GameSparks from 'gamesparks-sdk'
 import { EventEmitter } from 'events'
 import { runSaga, eventChannel, END } from 'redux-saga'
-import { take, put, call, cancelled, race } from 'redux-saga/effects'
+import { take, put, call, cancelled, race, delay } from 'redux-saga/effects'
 
-// creates an event Channel from an interval of seconds
-function gamesparksSubscribe(gsdk, secs) {
-  let chan = eventChannel(emit => {
-    // const iv = setTimeout(() => emit('STOP_WEBSOCKET'), 1500);
-    const  v = setTimeout(() => emit(END), 1500);
-    return () => {}
+function gamesparksSubscribe(sdk, env) {
+  let channel = eventChannel(emit => {
+
+    const initHandler = e => {
+      // sdk.sendWithData('AuthenticationRequest', { password: 'admin', userName: 'admin' }, handler)
+      // setTimeout(() => emit('STOP_WEBSOCKET'), 1500)
+console.log('INITIALIZED')
+      emit({ type: 'INITIALIZED' })
+    }
+
+    const handler = e => {
+      console.log(e)
+      // setTimeout(() => console.log(e), 1500)
+    }
+
+    sdk[`init${env}`]({
+      key: 'h313710gdMs0',
+      onNonce: n => CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(n, 'bv7XLbgfeKWviKsfw4Uu2rUc64ncn61S')),
+      onMessage: handler,
+      onInit: initHandler,
+    });
+
+    return () => {
+      sdk.disconnect()
+    }
   });
-  return chan;
+
+  return channel;
 }
 
-function* gamesparksListener(chan) {
-  try {
-    let msg = yield take(chan);
-    let heard = {
-      'STOP_WEBSOCKET': () => { console.log(msg); return msg; }
-    }[msg];
-    if (heard) return heard();
-  } finally {
-    console.log('subscribe cancelled')
-    // if (yield cancelled()) {
-      chan.close()
-    // }
+function* gamesparksListener(channel) {
+    const message = yield take(channel);
+    const heard = {
+      'STOP_WEBSOCKET': () => { return message; }
+    }[message];
+    return heard ? heard() : message;
+}
+
+function* loginListener(sdk) {
+// console.log('LOGIN_REQUEST')
+//   const action = yield take('INITIALIZED')
+  while (true) {
+    yield call(delay, 1000)
+    if (!sdk.isConnected()) {
+      console.log('AWAITING_CONNECTION')
+      continue
+    }
+    const action = yield take('LOGIN_REQUEST')
+    const credentials = { password: 'admin', userName: 'admin' }
+    sdk.sendWithData('AuthenticationRequest', credentials, e => {
+      setTimeout(() => console.log(e), 1500)
+    })
   }
 }
 
 export function* gamesparksSaga() {
-  const gsdk = new GameSparks()
-  let action = yield take('START_WEBSOCKET'),
-        chan = yield call(gamesparksSubscribe, gsdk, 4)
+  const sdk = new GameSparks(),
+     action = yield take('START_WEBSOCKET'),
+    channel = yield call(gamesparksSubscribe, sdk, 'Preview')
   try {
     while (true) {
-      // let { end } = yield race({
-      //   run: gamesparksListener(chan),
-      //   end: take('STOP_WEBSOCKET')
-      // });
-      let end = yield gamesparksListener(chan)
-      console.log(`countdown to ${end}`)
+      let { end } = yield race({
+        // run: [gamesparksListener(channel), call(loginListener, sdk)],
+        run: loginListener(sdk),
+        end: take('STOP_WEBSOCKET')
+      })
+      // let end = yield gamesparksListener(gchannel)
+      console.log(`caught ${end}`)
     }
   } finally {
     console.log('countdown cancelled')
     // if (yield cancelled()) {
-      chan.close()
+      channel.close()
     // }
   }
 }
@@ -57,10 +89,17 @@ runSaga(gamesparksSaga(), ((emitter, resolver) => ({
     emitter.on('action', callback);
     return () => { emitter.removeListener('action', callback); }
   },
-  dispatch: (output) => { emitter.emit('action', output) },
+  dispatch: (output) => {
+    // console.log(output)
+    emitter.emit('action', output)
+  },
   getState: resolver
 }))(emitter, () => state));
 
 it('runs a saga', () => {
   emitter.emit('action', { type: 'START_WEBSOCKET' });
+});
+
+it('attempts a login', () => {
+  emitter.emit('action', { type: 'LOGIN_REQUEST' });
 });
