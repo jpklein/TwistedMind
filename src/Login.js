@@ -6,12 +6,32 @@ import Container from '../src/components/Container';
 import Button from '../src/components/Button';
 import Label from '../src/components/Label';
 
-export default class Login extends React.Component {
-  press () {
-    // @todo Handles login actions
+import { connect } from 'react-redux';
+import { loginRequest } from './actions/login.js';
+
+class Login extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      username: '',
+      password: '',
+    };
+    this.isAttempting = false;
+    this._login = this._login.bind(this);
+  }
+
+  _login() {
+    let {username, password} = this.state;
+    this.isAttempting = true;
+    // attempt a login - a saga is listening to pick it up from here.
+    this.props.dispatch(loginRequest({ username, password }));
   };
 
   render() {
+    let {username, password} = this.state;
+    // let {dispatch} = this.props;
+    // let {formState, currentlySending, error} = this.props.data;
+
     return (
       <ScrollView style={styles.scroll}>
         <Container>
@@ -26,36 +46,48 @@ export default class Login extends React.Component {
         </Container>
         <Container>
           <Label text="Username or Email" />
-          <TextInput
+          <TextInput ref='username'
             autoCapitalize='none'
+            autoCorrect={false}
             autoFocus={true}
             keyboardType='email-address'
+            onChangeText={(text) => this.setState({ username: text })}
+            onSubmitEditing={() => this.refs.password.focus()}
+            returnKeyType='next'
             style={styles.textInput}
+            underlineColorAndroid='transparent'
           />
         </Container>
         <Container>
           <Label text="Password" />
-          <TextInput
+          <TextInput ref='password'
+            autoCapitalize='none'
+            autoCorrect={false}
+            onChangeText={(text) => this.setState({ password: text })}
+            onSubmitEditing={() => this._login}
+            returnKeyType='go'
             secureTextEntry={true}
             style={styles.textInput}
+            underlineColorAndroid='transparent'
           />
         </Container>
         <View style={styles.footer}>
             <Container>
                 <Button
-                    label="Sign In"
-                    styles={{
-                      button: styles.primaryButton,
-                      label: styles.buttonWhiteText
-                    }}
-                    onPress={this.press.bind(this)} />
+                  label="Sign In"
+                  onPress={() => this._login}
+                  styles={{
+                    button: styles.primaryButton,
+                    label: styles.buttonWhiteText
+                  }}
+                />
             </Container>
-            <Container>
+            {/* <Container>
                 <Button
                     label="CANCEL"
                     styles={{label: styles.buttonBlackText}}
                     onPress={this.press.bind(this)} />
-            </Container>
+            </Container> */}
         </View>
       </ScrollView>
     );
@@ -95,3 +127,10 @@ const styles = StyleSheet.create({
      marginTop: 100
   }
 });
+
+const mapStateToProps = (state) => {
+  return { data: state };
+}
+
+// Wrap the component to inject dispatch and state into it
+export default connect(mapStateToProps)(Login);

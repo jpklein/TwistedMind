@@ -1,0 +1,241 @@
+import GameSparks from 'gamesparks-sdk';
+// import createSagaMiddleware from 'redux-saga';
+// import { createStore, applyMiddleware } from 'redux';
+// import user from '../../src/reducers/User.js';
+import { runSaga, eventChannel, END } from 'redux-saga'
+import gamesparksSdk from '../../src/sagas/gamesparks.js';
+import { take, call, put, fork, cancel, race } from 'redux-saga/effects';
+
+// let sdk = new GameSparks();
+// let sagaMiddleware = createSagaMiddleware();
+// let store = createStore(user, sagaMiddleware);
+// sagaMiddleware.run(gamesparksSdk);
+
+
+// const { runSaga } = require('redux-saga')
+const { takeEvery, select } = require('redux-saga/effects');
+const EventEmitter = require('events').EventEmitter;
+
+const createSagaIO = (emitter, getStateResolve) => ({
+  // this will be used to resolve take Effects
+  subscribe: (callback) => {
+    emitter.on('action', callback);
+    return () => { emitter.removeListener('action', callback); }
+  },
+  // this will be used to resolve put Effects
+  dispatch: (output) => { emitter.emit('action', output) },
+  // this will be used to resolve select Effects
+  getState: getStateResolve
+})
+
+function* helloSaga() {
+  let s = yield select();
+  console.log('state', s);
+  yield takeEvery('message', (action) => { console.log(action.text) });
+}
+
+// function gamesparksSubscribe(sdk, env) {
+  // const sdk_secret = 'bv7XLbgfeKWviKsfw4Uu2rUc64ncn61S';
+  // sdk[`init${env}`]({
+  //   key: 'h313710gdMs0',
+  //   onNonce: n => CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(n, sdk_secret)),
+  //   onInit: emit('STOP_WEBSOCKET'),
+  // });
+function gamesparksSubscribe(sdk, secs) {
+  return eventChannel(emit => {
+    // const iv = setInterval(() => {
+    //   secs -= 1
+    //   if (secs > 0) {
+    //     emit(secs)
+    //   } else {
+    //     // this causes the channel to close
+    //     emit(END)
+    //   }
+    // }, 1000);
+    // // The subscriber must return an unsubscribe function
+    // return () => {
+    //   clearInterval(iv)
+    // }
+    setTimeout(() => emit('STOP_WEBSOCKET'), 30);
+    emit(END);
+    return () => {};
+  });
+}
+
+function* gamesparksSdkSaga() {
+  const sdk = new GameSparks();
+  let action = yield take('START_WEBSOCKET');
+  // let channel = yield call(gamesparksSubscribe, sdk, action.env);
+  let channel = yield call(gamesparksSubscribe, sdk, 5);
+  try {
+    while (true) {
+      // let { end } = yield race({
+      //   end: channel.take(msg => console.log(msg))
+      // });
+console.log('START_WEBSOCKET');
+      let sec = yield take(channel);
+      // throw(sec);
+      // if (end) {
+      //   channel.close();
+      // }
+    }
+  } finally {
+    console.log('countdown terminated')
+  }
+        // yield put({ type: INCOMING_PONG_PAYLOAD, payload })
+        // yield fork(pong, socket)
+    // console.log(action.env);
+  // });
+//     let channel = yield call(watchMessages, sdk, action.env);
+//     let winner = yield race({
+//       task: [call(externalListener, channel), call(internalListener, sdk)],
+//       cancel: take('STOP_WEBSOCKET')
+//     });
+//     if (winner.init) {
+//       channel.close();
+//     }
+}
+
+function countdown(secs) {
+  return eventChannel(emitter => {
+      const iv = setInterval(() => {
+        secs -= 1
+        if (secs > 0) {
+          emitter(secs)
+        } else {
+          // this causes the channel to close
+          emitter(END)
+        }
+      }, 1000);
+      // The subscriber must return an unsubscribe function
+      return () => {
+        clearInterval(iv)
+      }
+    }
+  )
+}
+
+function* saga() {
+  console.log('countdown beginning');
+  const chan = yield call(countdown, 5)
+  try {
+    while (true) {
+      // take(END) will cause the saga to terminate by jumping to the finally block
+      let seconds = yield take(chan)
+      console.log(`countdown: ${seconds}`)
+    }
+  } finally {
+    console.log('countdown terminated')
+  }
+}
+
+
+let emitter = new EventEmitter();
+const state = {};
+runSaga(saga(), createSagaIO(emitter, () => state));
+runSaga(helloSaga(), createSagaIO(emitter, () => state));
+runSaga(gamesparksSdkSaga(), createSagaIO(emitter, () => state));
+
+it('runs a saga', () => {
+  emitter.emit('action', {type: 'message', text: 'hello'});
+  emitter.emit('action', {type: 'message', text: 'world'});
+  emitter.emit('action', { type: 'START_WEBSOCKET', env: 'Preview' });
+});
+// const generator = wsHandling();
+
+// it('has the GameSparks sdk', () => {
+//   expect(() => {
+//     sdk.send('', (e) => { throw(e.error); });
+//   }).toThrow(/NOT_INITIALISED/);
+// });
+
+// it('initializes the sdk against preview servers', () => {
+//   expect(generator.next().value).toEqual(take('START_WEBSOCKET'));
+//   expect(generator.next({ env: 'PREVIEW' }).value).toEqual(call(watchMessages, sdk, 'PREVIEW'));
+//   let channel = watchMessages(sdk, 'PREVIEW');
+//   expect(generator.next(channel).value).toEqual(race({ task: [call(externalListener, channel), call(internalListener, sdk)], cancel: take('STOP_WEBSOCKET') }));
+//   let listener = externalListener(channel);
+//   // expect(externalListener(channel)).toThrow(/YO/);
+//   // expect(take(channel)).toEqual(take('STOP_WEBSOCKET'));
+//   expect(listener.next().value).toEqual(take(channel));
+//   // expect(generator.next()).toThrow(/YO/); // toEqual(channel.close);
+// });
+
+// it('authorizes users against preview servers', () => {
+//   put({ type: 'START_WEBSOCKET' });
+//   // let listener = internalListener(sdk);
+//   // expect(listener.next().value).toEqual(take('LOGIN_REQUEST'));
+//   // // expect(listener.next({ data: { username: 'admin', password: 'admin' }})).toThrow(/YO/);
+//   // expect(sdk.sendWithData('AuthenticationRequest', {password: 'admin', userName: 'admin'}, data => {console.log(data);})).toEqual('');
+//   expect(() => { put({ type: 'START_WEBSOCKET' }); }).toThrow(/ANYTHING/);
+//   // expect(() => { put({type: 'LOGIN_REQUEST', data: {username: 'admin', password: 'admin'}}); }).toThrow(/YO/);
+// });
+
+// it('initializes the sdk against preview servers', () => {
+//   expect(() => {
+//     const onNonce = (n) => {
+//       throw(n);
+//       return CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(n, 'bv7XLbgfeKWviKsfw4Uu2rUc64ncn61S'));
+//     };
+//     const onInit = () => {
+//       throw("Initialized");
+//     };
+//     const onMessage = (m) => {
+//       throw(JSON.stringify(m));
+//     };
+//     sdk.initPreview({
+//       key: 'h313710gdMs0',
+//       onNonce: onNonce,
+//       onInit: onInit,
+//       onMessage: onMessage
+//     });
+//   }).toThrow(/YO/);
+// });
+
+// function* initSdk() {
+//   const onNonce = (n) => {
+//     throw(n);
+//     return CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(n, 'bv7XLbgfeKWviKsfw4Uu2rUc64ncn61S'));
+//   };
+//   const onInit = () => {
+//     throw("Initialized");
+//   };
+//   const onMessage = (m) => {
+//     throw(JSON.stringify(m));
+//   };
+//   yield call(sdk.initPreview, {
+//     key: 'h313710gdMs0',
+//     onNonce: onNonce,
+//     onInit: onInit,
+//     onMessage: onMessage
+//   });
+// }
+//
+// it('initializes the sdk against preview servers', () => {
+//   expect(() => {
+//     const gen = initSdk();
+//     gen.next().done;
+//   }).toThrow(/YO/);
+// });
+
+// it('initializes the sdk against preview servers', () => {
+//   expect(() => {
+//     const onNonce = (n) => {
+//       throw(JSON.stringify(n));
+//       return CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(n, 'bv7XLbgfeKWviKsfw4Uu2rUc64ncn61S'));
+//     };
+//     const onInit = () => {
+//       throw("Initialized");
+//     };
+//     const onMessage = (m) => {
+//       throw(JSON.stringify(m));
+//     };
+//     const gen = call(sdk.initPreview, {
+//       key: 'h313710gdMs0',
+//       onNonce: onNonce,
+//       onInit: onInit,
+//       onMessage: onMessage
+//     });
+//     gen.next();
+//   }).toThrow(/SOMETHING/);
+// });
