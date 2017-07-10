@@ -5,15 +5,17 @@ import DebugConfig from '../Config/DebugConfig'
 
 /* ------------- Types ------------- */
 
-import { StartupTypes } from '../Redux/StartupRedux'
+import { exampleTypes } from '../Redux/example'
 import { GithubTypes } from '../Redux/GithubRedux'
 import { LoginTypes } from '../Redux/LoginRedux'
+import { StartupTypes } from '../Redux/StartupRedux'
 
 /* ------------- Sagas ------------- */
 
-import { startup } from './StartupSagas'
-import { login } from './LoginSagas'
+import { countdownSaga, pingSaga } from '../Sagas/example'
 import { getUserAvatar } from './GithubSagas'
+import { login } from './LoginSagas'
+import { startup } from './StartupSagas'
 
 /* ------------- API ------------- */
 
@@ -28,6 +30,8 @@ export default function * root () {
     // some sagas only receive an action
     takeLatest(StartupTypes.STARTUP, startup),
     takeLatest(LoginTypes.LOGIN_REQUEST, login),
+    takeLatest(exampleTypes.START_COUNTDOWN_SAGA, countdownSaga),
+    takeLatest(exampleTypes.START_PING_SAGA, pingSaga),
 
     // some sagas receive extra parameters in addition to an action
     takeLatest(GithubTypes.USER_REQUEST, getUserAvatar, api)
