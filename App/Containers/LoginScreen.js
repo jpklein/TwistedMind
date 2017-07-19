@@ -13,7 +13,6 @@ import { connect } from 'react-redux'
 import styles from './Styles/LoginScreenStyles'
 import {Images, Metrics} from '../Themes'
 import LoginActions from '../Redux/LoginRedux'
-import exampleActions from '../Redux/example'
 
 class LoginScreen extends React.Component {
   static propTypes = {
@@ -160,13 +159,8 @@ const mapStateToProps = (state) => {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    attemptLogin: (username, password) => dispatch(
-      LoginActions.loginRequest(username, password),
-      exampleActions.startCountdownSaga()
-    )
-  }
-}
+const mapDispatchToProps = dispatch => ({
+  attemptLogin: (username, password) => dispatch(LoginActions.loginRequest(username, password))
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen)

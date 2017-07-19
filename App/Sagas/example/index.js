@@ -1,3 +1,4 @@
+import Reactotron from 'reactotron-react-native'
 import { eventChannel, END, delay } from 'redux-saga'
 import { take, call, cancelled, fork, apply } from 'redux-saga/effects'
 let { WebSocket } = global
@@ -11,7 +12,7 @@ let { WebSocket } = global
  * Displays a countdown
  */
 // creates an event channel from an interval of seconds
-function countdownSubscribe (secs) {
+export function countdownSubscribe (secs) {
   // takes a subscriber function with emit method to put messages onto the channel
   return eventChannel(emit => {
     const iv = setInterval(() => {
@@ -26,6 +27,7 @@ function countdownSubscribe (secs) {
 }
 // blocked until a message is put on the channel
 export function * countdownSaga () {
+  Reactotron.warn('START_COUNTDOWN_SAGA')
   const channel = yield call(countdownSubscribe, 4)
   try {
     while (true) {
@@ -72,6 +74,7 @@ function * pingListener (socket) {
   console.log('client sent: pong')
 }
 export function * pingSaga () {
+  Reactotron.error('START_PING_SAGA')
   const socket = yield call(createWebSocketClient)
   const channel = yield call(pingSubscribe, socket)
   while (true) {
