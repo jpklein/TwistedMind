@@ -7,8 +7,8 @@ jest
   const RealComponent = require.requireActual('TextInput')
   const React = require('React')
   class TextInput extends React.Component {
-    render() {
-      delete this.props.autoFocus;
+    render () {
+      delete this.props.autoFocus
       return React.createElement('TextInput', this.props, this.props.children)
     }
   }
