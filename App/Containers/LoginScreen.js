@@ -10,9 +10,11 @@ import {
   LayoutAnimation
 } from 'react-native'
 import { connect } from 'react-redux'
-import styles from './Styles/LoginScreenStyles'
-import {Images, Metrics} from '../Themes'
-import LoginActions from '../Redux/LoginRedux'
+import Reactotron from 'reactotron-react-native'
+import GameSparks from '../lib/gamesparks.js'
+import LoginActions from '../Redux/LoginRedux.js'
+import styles from '../Containers/Styles/LoginScreenStyles.js'
+import { Images, Metrics } from '../Themes'
 
 class LoginScreen extends React.Component {
   static propTypes = {
@@ -28,12 +30,20 @@ class LoginScreen extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      username: 'reactnative@infinite.red',
-      password: 'password',
+      username: 'info@twistedmind.com',
+      password: 'pa55word',
       visibleHeight: Metrics.screenHeight,
       topLogo: { width: Metrics.screenWidth }
     }
     this.isAttempting = false
+    // instantiates gamesparks sdk
+    const env = 'Preview'
+    this.sdk = new GameSparks()
+    this.sdk[`init${env}`]({
+      key: 'h313710gdMs0',
+      secret: 'bv7XLbgfeKWviKsfw4Uu2rUc64ncn61S',
+      logger: Reactotron.log
+    })
   }
 
   componentWillReceiveProps (newProps) {
@@ -79,7 +89,10 @@ class LoginScreen extends React.Component {
     const { username, password } = this.state
     this.isAttempting = true
     // attempt a login - a saga is listening to pick it up from here.
-    this.props.attemptLogin(username, password)
+    // this.props.attemptLogin(username, password)
+    const credentials = { password: password, userName: username }
+    const onResponse = e => Reactotron.warn(this.sdk.authToken)
+    this.sdk.sendWithData('AuthenticationRequest', credentials, onResponse)
   }
 
   handleChangeUsername = (text) => {
@@ -153,16 +166,12 @@ class LoginScreen extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    fetching: state.login.fetching
-  }
-}
+const mapStateToProps = state => ({
+  fetching: state.login.fetching
+})
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    attemptLogin: (username, password) => dispatch(LoginActions.loginRequest(username, password))
-  }
-}
+const mapDispatchToProps = dispatch => ({
+  attemptLogin: (username, password) => dispatch(LoginActions.loginRequest(username, password))
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen)
