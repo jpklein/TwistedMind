@@ -1,8 +1,8 @@
-import { put, select } from 'redux-saga/effects'
-import GithubActions from '../Redux/GithubRedux'
-import AppStateActions from '../Redux/AppStateRedux'
 import { is } from 'ramda'
-import LoggedInActions, { isLoggedIn } from '../Redux/LoginRedux'
+import { put, select } from 'redux-saga/effects'
+import AppStateActions from '../Redux/AppStateRedux.js'
+import GithubActions from '../Redux/GithubRedux.js'
+import LoggedInActions, { isLoggedIn } from '../Redux/LoginRedux.js'
 
 // exported to make available for tests
 export const selectAvatar = (state) => state.github.avatar

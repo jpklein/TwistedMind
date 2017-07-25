@@ -1,15 +1,15 @@
 import { combineReducers } from 'redux'
-import configureStore from './CreateStore'
+import configureStore from '../Redux/CreateStore.js'
 import rootSaga from '../Sagas/'
 
 export default () => {
-  /* ------------- Assemble The Reducers ------------- */
   const rootReducer = combineReducers({
-    navigation: require('./NavigationRedux').reducer,
-    appState: require('./AppStateRedux').reducer,
-    github: require('./GithubRedux').reducer,
-    login: require('./LoginRedux').reducer,
-    search: require('./SearchRedux').reducer
+    navigation: require('../Redux/NavigationRedux.js').reducer,
+    appState: require('../Redux/AppStateRedux.js').reducer,
+    github: require('../Redux/GithubRedux.js').reducer,
+    login: require('../Redux/LoginRedux.js').reducer,
+    search: require('../Redux/SearchRedux.js').reducer,
+    gamesparks: require('../Redux/GamesparksRedux.js').reducer
   })
 
   return configureStore(rootReducer, rootSaga)

@@ -10,13 +10,11 @@ import {
   LayoutAnimation
 } from 'react-native'
 import { connect } from 'react-redux'
-import Reactotron from 'reactotron-react-native'
-import GameSparks from '../lib/gamesparks.js'
 import LoginActions from '../Redux/LoginRedux.js'
 import styles from '../Containers/Styles/LoginScreenStyles.js'
 import { Images, Metrics } from '../Themes'
 
-class LoginScreen extends React.Component {
+export class LoginScreen extends React.Component {
   static propTypes = {
     dispatch: PropTypes.func,
     fetching: PropTypes.bool,
@@ -36,14 +34,6 @@ class LoginScreen extends React.Component {
       topLogo: { width: Metrics.screenWidth }
     }
     this.isAttempting = false
-    // instantiates gamesparks sdk
-    const env = 'Preview'
-    this.sdk = new GameSparks()
-    this.sdk[`init${env}`]({
-      key: 'h313710gdMs0',
-      secret: 'bv7XLbgfeKWviKsfw4Uu2rUc64ncn61S',
-      logger: Reactotron.log
-    })
   }
 
   componentWillReceiveProps (newProps) {
@@ -88,11 +78,7 @@ class LoginScreen extends React.Component {
   handlePressLogin = () => {
     const { username, password } = this.state
     this.isAttempting = true
-    // attempt a login - a saga is listening to pick it up from here.
-    // this.props.attemptLogin(username, password)
-    const credentials = { password: password, userName: username }
-    const onResponse = e => Reactotron.warn(this.sdk.authToken)
-    this.sdk.sendWithData('AuthenticationRequest', credentials, onResponse)
+    this.props.attemptLogin(username, password)
   }
 
   handleChangeUsername = (text) => {
