@@ -5,47 +5,54 @@ import Immutable from 'seamless-immutable'
 /* Types and Action Creators ------------- */
 
 const { Types, Creators } = createActions({
-  startWebsocket: ['env', 'key', 'secret'],
-  redirectWebsocket: ['url'],
-  invalidateWebsocket: null
+  log: ['LOG'],
+  startWebsocket: ['env'],
+  invalidateWebsocket: null,
+  setEndpoint: ['env', 'url']
 })
-export const LoginTypes = Types
+export const GamesparksTypes = Types
 export default Creators
 
 /* Initial State ------------------------- */
 
 export const INITIAL_STATE = Immutable({
+  LOG: null,
+  environment: null,
   initializing: false,
   connected: false,
-  url: null,
-  env: null,
-  key: null,
-  secret: null,
+  endpoints: {
+    preview: 'wss://preview.gamesparks.net/ws/h313710gdMs0',
+    live: 'wss://live.gamesparks.net/ws/h313710gdMs0'
+  },
+  secret: 'bv7XLbgfeKWviKsfw4Uu2rUc64ncn61S',
   token: null
 })
 
 /* Reducers ------------------------------ */
 
-export const start = (state, { env, key, secret }) => { // state.merge({
-  // attempt to capture play-by-play from login saga
-  Reactotron.error(secret); return state.merge({
-    initializing: true,
-    env: env,
-    key: key // ,
-    // secret: secret,
-  })
+export const logger = (state, { LOG }) => {
+  const r = state.merge({ LOG })
+  Reactotron.warn(LOG)
+  // return INITIAL_STATE
+  return r
 }
 
-export const redirect = (state, { url }) => state.merge({
-  url: url
+export const start = (state, { env }) => state.merge({
+  environment: env,
+  initializing: true
 })
 
 export const invalidate = (state) => state.merge({
   connected: false
 })
 
+export const setUrl = (state, { env, url }) => state.merge({
+  endpoints: Object.assign({}, state.endpoints, { [env]: url })
+})
+
 export const reducer = createReducer(INITIAL_STATE, {
+  [Types.LOG]: logger,
   [Types.START_WEBSOCKET]: start,
-  [Types.REDIRECT_WEBSOCKET]: redirect,
-  [Types.INVALIDATE_WEBSOCKET]: invalidate
+  [Types.INVALIDATE_WEBSOCKET]: invalidate,
+  [Types.SET_ENDPOINT]: setUrl // redirect
 })
