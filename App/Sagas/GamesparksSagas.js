@@ -29,7 +29,7 @@ export function * connect ({ env }) {
       }
     }
   } finally {
-    yield put(Actions.log(shouldReconnect))
+    yield put(Actions.didClose())
     if (shouldReconnect === true) {
       yield put(Actions.startWebsocket(env))
     }
@@ -48,8 +48,6 @@ function initSdk (url, secret) {
     socket.onclose = (event) => {
       if (redirectUrl) {
         emit({ type: 'redirect', url: redirectUrl })
-      } else {
-        emit('WebSocket onClose')
       }
       emit(END)
     }

@@ -9,7 +9,7 @@ const { Types, Creators } = createActions({
   reset: null,
   startWebsocket: ['env'],
   didConnect: null,
-  invalidateWebsocket: null,
+  didClose: null,
   setEndpoint: ['env', 'url']
 })
 export const GamesparksTypes = Types
@@ -50,7 +50,7 @@ export const connected = (state) => state.merge({
   connected: true
 })
 
-export const invalidate = (state) => state.merge({
+export const disconnected = (state) => state.merge({
   connected: false
 })
 
@@ -63,6 +63,6 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.RESET]: resetter,
   [Types.START_WEBSOCKET]: start,
   [Types.DID_CONNECT]: connected,
-  [Types.INVALIDATE_WEBSOCKET]: invalidate,
+  [Types.DID_CLOSE]: disconnected,
   [Types.SET_ENDPOINT]: setUrl
 })
