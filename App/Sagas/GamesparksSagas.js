@@ -43,7 +43,7 @@ function initSdk (url, secret) {
       sessionId
     const socket = new WebSocket(url)
     socket.onopen = (event) => {
-      emit('WebSocket onOpen')
+      emit({ type: 'open' })
     }
     socket.onclose = (event) => {
       if (redirectUrl) {
@@ -99,6 +99,9 @@ function getHandler (type) {
   const handlers = {
     log: function * (env, event) {
       return yield put(Actions.log(event))
+    },
+    open: function * (env, event) {
+      return yield put(Actions.didConnect())
     },
     redirect: function * (env, { url }) {
       return yield put(Actions.setEndpoint(env, url))

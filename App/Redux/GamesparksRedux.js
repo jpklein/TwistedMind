@@ -7,6 +7,7 @@ import Immutable from 'seamless-immutable'
 const { Types, Creators } = createActions({
   log: ['LOG'],
   startWebsocket: ['env'],
+  didConnect: null,
   invalidateWebsocket: null,
   setEndpoint: ['env', 'url']
 })
@@ -42,6 +43,11 @@ export const start = (state, { env }) => state.merge({
   initializing: true
 })
 
+export const connected = (state) => state.merge({
+  initializing: false,
+  connected: true
+})
+
 export const invalidate = (state) => state.merge({
   connected: false
 })
@@ -53,6 +59,7 @@ export const setUrl = (state, { env, url }) => state.merge({
 export const reducer = createReducer(INITIAL_STATE, {
   [Types.LOG]: logger,
   [Types.START_WEBSOCKET]: start,
+  [Types.DID_CONNECT]: connected,
   [Types.INVALIDATE_WEBSOCKET]: invalidate,
-  [Types.SET_ENDPOINT]: setUrl // redirect
+  [Types.SET_ENDPOINT]: setUrl
 })
