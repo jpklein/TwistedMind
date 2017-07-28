@@ -6,6 +6,7 @@ import Immutable from 'seamless-immutable'
 
 const { Types, Creators } = createActions({
   log: ['LOG'],
+  reset: null,
   startWebsocket: ['env'],
   didConnect: null,
   invalidateWebsocket: null,
@@ -32,11 +33,12 @@ export const INITIAL_STATE = Immutable({
 /* Reducers ------------------------------ */
 
 export const logger = (state, { LOG }) => {
-  const r = state.merge({ LOG })
+  const s = state.merge({ LOG })
   Reactotron.warn(LOG)
-  // return INITIAL_STATE
-  return r
+  return s
 }
+
+export const resetter = state => INITIAL_STATE
 
 export const start = (state, { env }) => state.merge({
   environment: env,
@@ -58,6 +60,7 @@ export const setUrl = (state, { env, url }) => state.merge({
 
 export const reducer = createReducer(INITIAL_STATE, {
   [Types.LOG]: logger,
+  [Types.RESET]: resetter,
   [Types.START_WEBSOCKET]: start,
   [Types.DID_CONNECT]: connected,
   [Types.INVALIDATE_WEBSOCKET]: invalidate,

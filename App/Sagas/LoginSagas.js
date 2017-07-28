@@ -9,6 +9,7 @@ export function * login ({ username, password }) {
     yield put(LoginActions.loginFailure('WRONG'))
   } else {
     // dispatch successful logins
+    yield put(GamesparksActions.reset())
     yield put(GamesparksActions.startWebsocket('preview'))
     // yield put(LoginActions.loginSuccess(username))
   }
