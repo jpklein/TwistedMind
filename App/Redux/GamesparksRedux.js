@@ -8,7 +8,7 @@ const { Types, Creators } = createActions({
   log: ['LOG'],
   reset: null,
   startWebsocket: ['env'],
-  didConnect: null,
+  didConnect: ['sessionId'],
   didClose: null,
   setEndpoint: ['env', 'url']
 })
@@ -27,7 +27,7 @@ export const INITIAL_STATE = Immutable({
     live: 'wss://live.gamesparks.net/ws/h313710gdMs0'
   },
   secret: 'bv7XLbgfeKWviKsfw4Uu2rUc64ncn61S',
-  token: null
+  session: null
 })
 
 /* Reducers ------------------------------ */
@@ -45,13 +45,15 @@ export const start = (state, { env }) => state.merge({
   initializing: true
 })
 
-export const connected = (state) => state.merge({
+export const connected = (state, { sessionId }) => state.merge({
   initializing: false,
-  connected: true
+  connected: true,
+  session: sessionId
 })
 
 export const disconnected = (state) => state.merge({
-  connected: false
+  connected: false,
+  session: null
 })
 
 export const setUrl = (state, { env, url }) => state.merge({

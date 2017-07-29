@@ -24,7 +24,8 @@ export function * connect ({ env }) {
       const event = yield take(channel)
       if (typeof event === 'object' && event.type) {
         const handle = getHandler(event.type)
-        const { type } = yield handle(env, event)
+        event.env = env
+        const { type } = yield handle(event)
         shouldReconnect = type === 'SET_ENDPOINT'
       }
     }
@@ -69,6 +70,7 @@ function initSdk (url, secret) {
         redirectUrl = msg['connectUrl']
       }
       if (msg['@class'] === '.AuthenticatedConnectResponse') {
+        // handshaking
         if (msg['nonce']) {
           const reply = {
             '@class': '.AuthenticatedConnectRequest',
@@ -80,10 +82,12 @@ function initSdk (url, secret) {
           if (sessionId) {
             reply.sessionId = sessionId
           }
+          // @todo send platform/os data
           socket.send(JSON.stringify(reply))
         } else if (msg['sessionId']) {
           sessionId = msg['sessionId']
-          emit(msg)
+          emit({ type: 'connected', sessionId: sessionId })
+          // @todo set keepalive interval?
         }
       }
     }
@@ -95,14 +99,14 @@ function initSdk (url, secret) {
 
 function getHandler (type) {
   const handlers = {
-    log: function * (env, event) {
+    log: function * (event) {
       return yield put(Actions.log(event))
     },
-    open: function * (env, event) {
-      return yield put(Actions.didConnect())
-    },
-    redirect: function * (env, { url }) {
+    redirect: function * ({ env, url }) {
       return yield put(Actions.setEndpoint(env, url))
+    },
+    connected: function * ({ sessionId }) {
+      return yield put(Actions.didConnect(sessionId))
     }
   }
   const fn = handlers[type] || handlers.log
