@@ -15,9 +15,9 @@ export const sdkConfig = state => ({
 export function * connect ({ env }) {
 //   const isConnected = yield select(hasWebsocket)
 //   if (!isConnected) {
-  const { endpoints, secret } = yield select(sdkConfig)
-  const url = endpoints[env] || INITIAL_STATE.endpoints[env]
-  const channel = yield call(initSdk, url, secret)
+  const sdk = yield select(sdkConfig)
+  const url = sdk.endpoints[env] || INITIAL_STATE.endpoints[env]
+  const channel = yield call(initSdk, url, sdk.secret)
   let shouldReconnect
   try {
     while (true) {
