@@ -43,9 +43,6 @@ function initSdk (url, secret) {
       redirectUrl,
       sessionId
     const socket = new WebSocket(url)
-    socket.onopen = (event) => {
-      emit({ type: 'open' })
-    }
     socket.onclose = (event) => {
       if (redirectUrl) {
         emit({ type: 'redirect', url: redirectUrl })
