@@ -1,11 +1,11 @@
 /* global WebSocket */
 import CryptoJS from 'crypto-js'
-import { END, eventChannel } from 'redux-saga'
+import { eventChannel } from 'redux-saga'
 import { call, put, select, take } from 'redux-saga/effects'
 import Actions, { INITIAL_STATE } from '../Redux/GamesparksRedux.js'
-// import LoginActions from '../Redux/LoginRedux.js'
 
-// export const hasWebsocket = state => state.gamesparks.connected
+// @todo define connectionFlow() to manage network connection/reconnection/error reporting
+
 export const sdkConfig = state => ({
   endpoints: state.gamesparks.endpoints,
   secret: state.gamesparks.secret
@@ -13,19 +13,18 @@ export const sdkConfig = state => ({
 
 // attempts to login
 export function * connect ({ env }) {
-//   const isConnected = yield select(hasWebsocket)
-//   if (!isConnected) {
   const sdk = yield select(sdkConfig)
   const url = sdk.endpoints[env] || INITIAL_STATE.endpoints[env]
-  const channel = yield call(initSdk, url, sdk.secret)
   let shouldReconnect
   try {
+    const socket = new WebSocket(url)
+    const channel = yield call(initSdk, socket, sdk.secret)
     while (true) {
+      // @todo set up race with internal listeners to send requests / invalidate connection (request close)
       const event = yield take(channel)
       if (typeof event === 'object' && event.type) {
         const handle = getHandler(event.type)
-        event.env = env
-        const { type } = yield handle(event)
+        const { type } = yield handle({ ...event, env: env })
         shouldReconnect = type === 'SET_ENDPOINT'
       }
     }
@@ -37,27 +36,26 @@ export function * connect ({ env }) {
   }
 }
 
-function initSdk (url, secret) {
+function initSdk (socket, secret) {
   return eventChannel(emit => {
     let authToken,
       redirectUrl,
       sessionId
-    const socket = new WebSocket(url)
     socket.onclose = (event) => {
       if (redirectUrl) {
-        emit({ type: 'redirect', url: redirectUrl })
+        emit({ type: 'redirected', url: redirectUrl })
       }
-      emit(END)
+      emit({ type: 'closed' })
     }
     socket.onerror = (event) => {
-      emit('WebSocket onError')
+      emit({ type: 'errored', ...event })
     }
     socket.onmessage = (event) => {
       let msg
       try {
         msg = JSON.parse(event.data)
       } catch (e) {
-        emit(END)
+        emit({ type: 'errored', ...event })
         return
       }
       if (msg['authToken']) {
@@ -97,13 +95,16 @@ function initSdk (url, secret) {
 function getHandler (type) {
   const handlers = {
     log: function * (event) {
-      return yield put(Actions.log(event))
+      return yield put(Actions.log(event.type))
     },
-    redirect: function * ({ env, url }) {
+    redirected: function * ({ env, url }) {
       return yield put(Actions.setEndpoint(env, url))
     },
     connected: function * ({ sessionId }) {
       return yield put(Actions.didConnect(sessionId))
+    },
+    closed: () => {
+      // @todo returning undefined throws an error?
     }
   }
   const fn = handlers[type] || handlers.log
