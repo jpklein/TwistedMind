@@ -3,6 +3,7 @@ import CryptoJS from 'crypto-js'
 import { eventChannel } from 'redux-saga'
 import { call, put, race, select, take } from 'redux-saga/effects'
 import Actions, { INITIAL_STATE } from '../Redux/GamesparksRedux.js'
+import LoginActions from '../Redux/LoginRedux.js'
 
 // @todo define connectionFlow() to manage network connection/reconnection/error reporting
 
@@ -83,9 +84,18 @@ function initSdk (socket, secret) {
           // @todo send platform/os data
           socket.send(JSON.stringify(reply))
         } else if (msg['sessionId']) {
+          socket.pendingRequests = {}
+          // @todo set keepalive interval?
           sessionId = msg['sessionId']
           emit({ type: 'connected', sessionId: sessionId })
-          // @todo set keepalive interval?
+        }
+      } else if (msg['@class'].match(/Response$/)) {
+        const { requestId } = msg
+        if (requestId && socket.pendingRequests[requestId]) {
+          delete msg.requestId
+          // executes onResponse()
+          socket.pendingRequests[requestId](emit, msg)
+          delete socket.pendingRequests[requestId]
         }
       }
     }
@@ -98,8 +108,11 @@ function initSdk (socket, secret) {
 function * transmit (socket) {
   let requestCounter = 0
   while (true) {
-    const { data } = yield take('WEBSOCKET_SEND')
+    const { data, onResponse } = yield take('WEBSOCKET_SEND')
     const requestId = (new Date()).getTime() + '_' + (++requestCounter)
+    if (onResponse != null) {
+      socket.pendingRequests[requestId] = onResponse
+    }
     socket.send(JSON.stringify({ requestId: requestId, ...data }))
   }
 }
@@ -114,6 +127,9 @@ function getHandler (type) {
     },
     connected: function * ({ sessionId }) {
       return yield put(Actions.gamesparksConnected(sessionId))
+    },
+    authenticated: function * ({ userId, authToken, displayName }) {
+      return yield put(LoginActions.loginSuccess(userId, authToken, displayName))
     },
     closed: () => {
       // @todo returning undefined throws an error?

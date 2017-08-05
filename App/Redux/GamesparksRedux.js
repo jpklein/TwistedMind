@@ -69,3 +69,9 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.WEBSOCKET_CLOSED]: disconnected,
   [Types.SET_ENDPOINT]: setUrl
 })
+
+/* Helpers ------------------------------- */
+
+export const onAuthResponse = (emit, msg) => {
+  emit({ type: 'authenticated', ...msg })
+}

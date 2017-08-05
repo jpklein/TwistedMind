@@ -1,6 +1,6 @@
 import { delay } from 'redux-saga'
 import { call, put, race, select, take } from 'redux-saga/effects'
-import GamesparksActions from '../Redux/GamesparksRedux.js'
+import GamesparksActions, { onAuthResponse } from '../Redux/GamesparksRedux.js'
 import LoginActions, { LoginTypes } from '../Redux/LoginRedux.js'
 
 export const sdkStatus = (state) => state.gamesparks
@@ -19,20 +19,16 @@ export function * loginFlow () {
       auth: call(login, username, password),
       logout: take(LoginTypes.LOGOUT)
     })
-    if (winner.auth) {
-      yield put(LoginActions.loginSuccess(username))
-    }
   }
 }
 
 // attempts to login
 export function * login (username, password) {
-  if (password === '') {
-    // dispatch failure
-    yield put(LoginActions.loginFailure('WRONG'))
-  } else {
-    // dispatch successful logins
-    yield put(GamesparksActions.reset())
+  const data = {
+    '@class': '.AuthenticationRequest',
+    password: password,
+    userName: username
   }
+  yield put(GamesparksActions.websocketSend(data, onAuthResponse))
   return true
 }
