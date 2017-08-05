@@ -14,13 +14,13 @@ export function * loginFlow () {
     } else if (sdkIs.connected === false) {
       yield put(GamesparksActions.startWebsocket('preview'))
     }
-    const { user, pass } = yield take(LoginTypes.LOGIN_REQUEST)
+    const { username, password } = yield take(LoginTypes.LOGIN_REQUEST)
     const winner = yield race({
-      auth: call(login, user, pass),
+      auth: call(login, username, password),
       logout: take(LoginTypes.LOGOUT)
     })
     if (winner.auth) {
-      yield put(LoginActions.loginSuccess(user))
+      yield put(LoginActions.loginSuccess(username))
     }
   }
 }
