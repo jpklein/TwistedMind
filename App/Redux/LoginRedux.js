@@ -28,22 +28,24 @@ export const INITIAL_STATE = Immutable({
 /* ------------- Reducers ------------- */
 
 // we're attempting to login
-// @todo set username from request
-export const request = (state) => state.merge({ fetching: true })
+export const request = (state, { username }) => state.merge({
+  username,
+  fetching: true
+})
 
 // we've successfully logged in
-export const success = (state, { userId, authToken, displayName }) =>
-  state.merge({
-    fetching: false,
-    error: null,
-    authToken: authToken,
-    userId: userId,
-    displayName: displayName
-  })
+export const success = (state, { userId, authToken, displayName }) => state.merge({
+  fetching: false,
+  error: null,
+  authToken,
+  userId,
+  displayName
+})
 
 // we've had a problem logging in
-export const failure = (state, { error }) =>
-  state.merge({ fetching: false, error })
+export const failure = (state, { error }) => state.merge({ fetching: false,
+  error
+})
 
 // we've logged out
 export const logout = (state) => INITIAL_STATE

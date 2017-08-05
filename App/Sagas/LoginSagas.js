@@ -1,7 +1,7 @@
 import { delay } from 'redux-saga'
 import { call, put, race, select, take } from 'redux-saga/effects'
 import GamesparksActions, { onAuthResponse } from '../Redux/GamesparksRedux.js'
-import LoginActions, { LoginTypes } from '../Redux/LoginRedux.js'
+import { LoginTypes } from '../Redux/LoginRedux.js'
 
 export const sdkStatus = (state) => state.gamesparks
 
@@ -15,7 +15,7 @@ export function * loginFlow () {
       yield put(GamesparksActions.startWebsocket('preview'))
     }
     const { username, password } = yield take(LoginTypes.LOGIN_REQUEST)
-    const winner = yield race({
+    yield race({
       auth: call(login, username, password),
       logout: take(LoginTypes.LOGOUT)
     })

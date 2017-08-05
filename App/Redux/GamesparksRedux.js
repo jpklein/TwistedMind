@@ -34,9 +34,8 @@ export const INITIAL_STATE = Immutable({
 /* Reducers ------------------------------ */
 
 export const logger = (state, { LOG }) => {
-  const s = state.merge({ LOG })
   Reactotron.warn(LOG)
-  return s
+  return state
 }
 
 export const resetter = state => INITIAL_STATE
@@ -73,5 +72,9 @@ export const reducer = createReducer(INITIAL_STATE, {
 /* Helpers ------------------------------- */
 
 export const onAuthResponse = (emit, msg) => {
-  emit({ type: 'authenticated', ...msg })
+  if (msg.authToken) {
+    emit({ type: 'authenticated', ...msg })
+  } else {
+    emit({ type: 'log', ...msg })
+  }
 }
