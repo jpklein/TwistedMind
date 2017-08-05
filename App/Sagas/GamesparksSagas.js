@@ -1,7 +1,7 @@
 /* global WebSocket */
 import CryptoJS from 'crypto-js'
 import { eventChannel } from 'redux-saga'
-import { call, put, select, take } from 'redux-saga/effects'
+import { call, put, race, select, take } from 'redux-saga/effects'
 import Actions, { INITIAL_STATE } from '../Redux/GamesparksRedux.js'
 
 // @todo define connectionFlow() to manage network connection/reconnection/error reporting
@@ -20,11 +20,14 @@ export function * connect ({ env }) {
     const socket = new WebSocket(url)
     const channel = yield call(initSdk, socket, sdk.secret)
     while (true) {
-      // @todo set up race with internal listeners to send requests / invalidate connection (request close)
-      const event = yield take(channel)
+      // @todo add internal listener to invalidate connection (request close)
+      const { event } = yield race({
+        send: call(transmit, socket),
+        event: take(channel)
+      })
       if (typeof event === 'object' && event.type) {
         const handle = getHandler(event.type)
-        const { type } = yield handle({ ...event, env: env })
+        const { type } = yield handle({ env: env, ...event })
         shouldReconnect = type === 'SET_ENDPOINT'
       }
     }
@@ -90,6 +93,15 @@ function initSdk (socket, secret) {
       socket.close()
     }
   })
+}
+
+function * transmit (socket) {
+  let requestCounter = 0
+  while (true) {
+    const { data } = yield take('WEBSOCKET_SEND')
+    const requestId = (new Date()).getTime() + '_' + (++requestCounter)
+    socket.send(JSON.stringify({ requestId: requestId, ...data }))
+  }
 }
 
 function getHandler (type) {
