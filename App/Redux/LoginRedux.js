@@ -5,7 +5,7 @@ import Immutable from 'seamless-immutable'
 
 const { Types, Creators } = createActions({
   loginRequest: ['username', 'password'],
-  loginSuccess: ['userId', 'authToken', 'displayName'],
+  loginSuccess: ['authToken', 'userId', 'displayName'],
   loginFailure: ['error'],
   logout: null,
   autoLogin: null
@@ -34,7 +34,7 @@ export const request = (state, { username }) => state.merge({
 })
 
 // we've successfully logged in
-export const success = (state, { userId, authToken, displayName }) => state.merge({
+export const success = (state, { authToken, userId, displayName }) => state.merge({
   fetching: false,
   error: null,
   authToken,
@@ -66,4 +66,4 @@ export const reducer = createReducer(INITIAL_STATE, {
 /* ------------- Selectors ------------- */
 
 // Is the current user logged in?
-export const isLoggedIn = (loginState) => loginState.username !== null
+export const isLoggedIn = (loginState) => loginState.authToken !== null
