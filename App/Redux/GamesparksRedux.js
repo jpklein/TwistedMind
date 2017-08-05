@@ -8,8 +8,9 @@ const { Types, Creators } = createActions({
   log: ['LOG'],
   reset: null,
   startWebsocket: ['env'],
-  didConnect: ['sessionId'],
-  didClose: null,
+  gamesparksConnected: ['sessionId'],
+  websocketSend: ['data', 'onResponse'],
+  websocketClosed: null,
   setEndpoint: ['env', 'url']
 })
 export const GamesparksTypes = Types
@@ -64,7 +65,7 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.LOG]: logger,
   [Types.RESET]: resetter,
   [Types.START_WEBSOCKET]: start,
-  [Types.DID_CONNECT]: connected,
-  [Types.DID_CLOSE]: disconnected,
+  [Types.GAMESPARKS_CONNECTED]: connected,
+  [Types.WEBSOCKET_CLOSED]: disconnected,
   [Types.SET_ENDPOINT]: setUrl
 })

@@ -29,7 +29,7 @@ export function * connect ({ env }) {
       }
     }
   } finally {
-    yield put(Actions.didClose())
+    yield put(Actions.websocketClosed())
     if (shouldReconnect === true) {
       yield put(Actions.startWebsocket(env))
     }
@@ -48,14 +48,14 @@ function initSdk (socket, secret) {
       emit({ type: 'closed' })
     }
     socket.onerror = (event) => {
-      emit({ type: 'errored', ...event })
+      emit({ type: 'errored', event })
     }
     socket.onmessage = (event) => {
       let msg
       try {
         msg = JSON.parse(event.data)
       } catch (e) {
-        emit({ type: 'errored', ...event })
+        emit({ type: 'errored', event })
         return
       }
       if (msg['authToken']) {
@@ -95,13 +95,13 @@ function initSdk (socket, secret) {
 function getHandler (type) {
   const handlers = {
     log: function * (event) {
-      return yield put(Actions.log(event.type))
+      return yield put(Actions.log(event))
     },
     redirected: function * ({ env, url }) {
       return yield put(Actions.setEndpoint(env, url))
     },
     connected: function * ({ sessionId }) {
-      return yield put(Actions.didConnect(sessionId))
+      return yield put(Actions.gamesparksConnected(sessionId))
     },
     closed: () => {
       // @todo returning undefined throws an error?
