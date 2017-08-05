@@ -23,7 +23,7 @@ export function * connect ({ env }) {
     while (true) {
       // @todo add internal listener to invalidate connection (request close)
       const { event } = yield race({
-        send: call(transmit, socket),
+        send: call(transmitSaga, socket),
         event: take(channel)
       })
       if (typeof event === 'object' && event.type) {
@@ -33,7 +33,6 @@ export function * connect ({ env }) {
       }
     }
   } finally {
-    yield put(Actions.websocketClosed())
     if (shouldReconnect === true) {
       yield put(Actions.startWebsocket(env))
     }
@@ -84,7 +83,6 @@ function initSdk (socket, secret) {
           // @todo send platform/os data
           socket.send(JSON.stringify(reply))
         } else if (msg['sessionId']) {
-          socket.pendingRequests = {}
           // @todo set keepalive interval?
           sessionId = msg['sessionId']
           emit({ type: 'connected', sessionId: sessionId })
@@ -94,7 +92,8 @@ function initSdk (socket, secret) {
         if (requestId && socket.pendingRequests[requestId]) {
           delete msg.requestId
           // executes onResponse()
-          socket.pendingRequests[requestId](emit, msg)
+          const onResponse = socket.pendingRequests[requestId]
+          onResponse(emit, msg)
           delete socket.pendingRequests[requestId]
         }
       }
@@ -105,8 +104,9 @@ function initSdk (socket, secret) {
   })
 }
 
-function * transmit (socket) {
+function * transmitSaga (socket) {
   let requestCounter = 0
+  socket.pendingRequests = {}
   while (true) {
     const { data, onResponse } = yield take('WEBSOCKET_SEND')
     const requestId = (new Date()).getTime() + '_' + (++requestCounter)
@@ -131,8 +131,9 @@ function getHandler (type) {
     authenticated: function * ({ userId, authToken, displayName }) {
       return yield put(LoginActions.loginSuccess(userId, authToken, displayName))
     },
-    closed: () => {
-      // @todo returning undefined throws an error?
+    closed: function * () {
+      // undefined return triggers connect() finally block
+      yield put(Actions.websocketClosed())
     }
   }
   const fn = handlers[type] || handlers.log
