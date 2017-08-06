@@ -19,7 +19,6 @@ export default Creators
 /* Initial State ------------------------- */
 
 export const INITIAL_STATE = Immutable({
-  LOG: null,
   environment: null,
   initializing: false,
   connected: false,
@@ -69,7 +68,7 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.SET_ENDPOINT]: setUrl
 })
 
-/* Helpers ------------------------------- */
+/* Handlers ------------------------------ */
 
 export const onAuthResponse = (emit, msg) => {
   if (msg.authToken) {

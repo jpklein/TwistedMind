@@ -51,14 +51,14 @@ function initSdk (socket, secret) {
       emit({ type: 'closed' })
     }
     socket.onerror = (event) => {
-      emit({ type: 'errored', event })
+      emit({ type: 'log', event })
     }
     socket.onmessage = (event) => {
       let msg
       try {
         msg = JSON.parse(event.data)
       } catch (e) {
-        emit({ type: 'errored', event })
+        emit({ type: 'log', event })
         return
       }
       if (msg['authToken']) {
@@ -83,6 +83,8 @@ function initSdk (socket, secret) {
           // @todo send platform/os data
           socket.send(JSON.stringify(reply))
         } else if (msg['sessionId']) {
+          socket.requestCounter = 0
+          socket.pendingRequests = {}
           // @todo set keepalive interval?
           sessionId = msg['sessionId']
           emit({ type: 'connected', sessionId: sessionId })
@@ -91,9 +93,8 @@ function initSdk (socket, secret) {
         const { requestId } = msg
         if (requestId && socket.pendingRequests[requestId]) {
           delete msg.requestId
-          // executes onResponse()
-          const onResponse = socket.pendingRequests[requestId]
-          onResponse(emit, msg)
+          // executes onResponse handler
+          socket.pendingRequests[requestId](emit, msg)
           delete socket.pendingRequests[requestId]
         }
       }
@@ -105,13 +106,18 @@ function initSdk (socket, secret) {
 }
 
 function * transmitSaga (socket) {
-  let requestCounter = 0
-  socket.pendingRequests = {}
   while (true) {
     const { data, onResponse } = yield take('WEBSOCKET_SEND')
-    const requestId = (new Date()).getTime() + '_' + (++requestCounter)
+    const requestId = (new Date()).getTime() + '_' + (++socket.requestCounter)
     if (onResponse != null) {
+      // assigns onResponse handler
       socket.pendingRequests[requestId] = onResponse
+      // emits error if handler hasn't executed before timeout
+      setTimeout(() => {
+        if (socket.pendingRequests[requestId]) {
+          socket.onerror({ error: 'NO_RESPONSE', requestId })
+        }
+      }, 3200)
     }
     socket.send(JSON.stringify({ requestId: requestId, ...data }))
   }
