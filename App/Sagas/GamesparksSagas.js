@@ -12,7 +12,7 @@ export const sdkConfig = state => ({
   secret: state.gamesparks.secret
 })
 
-// attempts to login
+// attempts to initialize gamesparks
 export function * connect ({ env }) {
   const sdk = yield select(sdkConfig)
   const url = sdk.endpoints[env] || INITIAL_STATE.endpoints[env]
@@ -32,7 +32,7 @@ export function * connect ({ env }) {
         shouldReconnect = type === 'SET_ENDPOINT'
       }
     }
-  } finally {
+  } catch (e) {
     if (shouldReconnect === true) {
       yield put(Actions.startWebsocket(env))
     }
@@ -85,7 +85,10 @@ function initSdk (socket, secret) {
         } else if (msg['sessionId']) {
           socket.requestCounter = 0
           socket.pendingRequests = {}
-          // @todo set keepalive interval?
+          // keepalive interval destroyed with socket
+          socket.keepAliveInterval = setInterval(() => {
+            socket.send(' ')
+          }, 30000)
           sessionId = msg['sessionId']
           emit({ type: 'connected', sessionId: sessionId })
         }
@@ -112,7 +115,7 @@ function * transmitSaga (socket) {
     if (onResponse != null) {
       // assigns onResponse handler
       socket.pendingRequests[requestId] = onResponse
-      // emits error if handler hasn't executed before timeout
+      // emits error if handler hasn't executed after 3.2 sec
       setTimeout(() => {
         if (socket.pendingRequests[requestId]) {
           socket.onerror({ error: 'NO_RESPONSE', requestId })
