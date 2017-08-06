@@ -51,6 +51,7 @@ export const connected = (state, { sessionId }) => state.merge({
 })
 
 export const disconnected = (state) => state.merge({
+  initializing: false,
   connected: false,
   session: null
 })

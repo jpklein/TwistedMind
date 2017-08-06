@@ -2,39 +2,61 @@
 import CryptoJS from 'crypto-js'
 import { eventChannel } from 'redux-saga'
 import { call, put, race, select, take } from 'redux-saga/effects'
-import Actions, { INITIAL_STATE } from '../Redux/GamesparksRedux.js'
+import Actions, { GamesparksTypes, INITIAL_STATE } from '../Redux/GamesparksRedux.js'
 import LoginActions from '../Redux/LoginRedux.js'
 
+export const sdkStatus = state => state.gamesparks
+
 // @todo define connectionFlow() to manage network connection/reconnection/error reporting
+export function * hasGamesparksConnection () {
+  let sdkIs = yield select(sdkStatus)
+  if (sdkIs.connected === false) {
+    yield put(Actions.startWebsocket('preview'))
+    sdkIs = yield select(sdkStatus)
+  }
+  if (sdkIs.initializing === true) {
+    const status = yield race({
+      initialized: take(GamesparksTypes.GAMESPARKS_CONNECTED),
+      offline: take(GamesparksTypes.WEBSOCKET_CLOSED)
+    })
+    if (status.offline) {
+      return false
+    }
+  }
+  return true
+}
 
 export const sdkConfig = state => ({
   endpoints: state.gamesparks.endpoints,
   secret: state.gamesparks.secret
 })
 
-// attempts to initialize gamesparks
-export function * connect ({ env }) {
-  const sdk = yield select(sdkConfig)
-  const url = sdk.endpoints[env] || INITIAL_STATE.endpoints[env]
-  let shouldReconnect
-  try {
-    const socket = new WebSocket(url)
-    const channel = yield call(initSdk, socket, sdk.secret)
-    while (true) {
-      // @todo add internal listener to invalidate connection (request close)
-      const { event } = yield race({
-        send: call(transmitSaga, socket),
-        event: take(channel)
-      })
-      if (typeof event === 'object' && event.type) {
-        const handle = getHandler(event.type)
-        const { type } = yield handle({ env: env, ...event })
-        shouldReconnect = type === 'SET_ENDPOINT'
+// attempts to login
+export function * connectSaga () {
+  while (true) {
+    const { env } = yield take(GamesparksTypes.START_WEBSOCKET)
+    const sdk = yield select(sdkConfig)
+    const url = sdk.endpoints[env] || INITIAL_STATE.endpoints[env]
+    let shouldReconnect
+    try {
+      const socket = new WebSocket(url)
+      const channel = yield call(initSdk, socket, sdk.secret)
+      while (true) {
+        // @todo add internal listener to invalidate connection (request close)
+        const { event } = yield race({
+          send: call(transmitSaga, socket),
+          event: take(channel)
+        })
+        if (typeof event === 'object' && event.type) {
+          const handle = getHandler(event.type)
+          const { type } = yield handle({ env: env, ...event })
+          shouldReconnect = type === 'SET_ENDPOINT'
+        }
       }
-    }
-  } catch (e) {
-    if (shouldReconnect === true) {
-      yield put(Actions.startWebsocket(env))
+    } catch (e) {
+      if (shouldReconnect === true) {
+        yield put(Actions.startWebsocket(env))
+      }
     }
   }
 }

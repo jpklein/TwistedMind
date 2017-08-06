@@ -1,20 +1,14 @@
-import { delay } from 'redux-saga'
-import { call, put, race, select, take } from 'redux-saga/effects'
+import { call, put, race, take } from 'redux-saga/effects'
 import GamesparksActions, { onAuthResponse } from '../Redux/GamesparksRedux.js'
+import { hasGamesparksConnection } from '../Sagas/GamesparksSagas.js'
 import { LoginTypes } from '../Redux/LoginRedux.js'
 
-export const sdkStatus = (state) => state.gamesparks
-
-export function * loginFlow () {
+export function * loginSaga () {
   while (true) {
-    // @todo only connect on demand/bounce attempts until timeout
-    const sdkIs = yield select(sdkStatus)
-    if (sdkIs.initializing === true) {
-      yield call(delay, 500)
-    } else if (sdkIs.connected === false) {
-      yield put(GamesparksActions.startWebsocket('preview'))
-    }
     const { username, password } = yield take(LoginTypes.LOGIN_REQUEST)
+    // @todo bounce attempts until timeout
+    const connected = yield hasGamesparksConnection()
+    if (!connected) continue
     yield race({
       auth: call(login, username, password),
       logout: take(LoginTypes.LOGOUT)

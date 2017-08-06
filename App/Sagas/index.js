@@ -5,15 +5,14 @@ import FixtureAPI from '../Services/FixtureApi'
 
 /* ------------- Types ------------- */
 
-import { GamesparksTypes } from '../Redux/GamesparksRedux.js'
 import { GithubTypes } from '../Redux/GithubRedux.js'
 import { StartupTypes } from '../Redux/StartupRedux.js'
 
 /* ------------- Sagas ------------- */
 
-import { connect } from '../Sagas/GamesparksSagas.js'
+import { connectSaga } from '../Sagas/GamesparksSagas.js'
 import { getUserAvatar } from '../Sagas/GithubSagas.js'
-import { loginFlow } from '../Sagas/LoginSagas.js'
+import { loginSaga } from '../Sagas/LoginSagas.js'
 import { startup } from '../Sagas/StartupSagas.js'
 
 /* ------------- API ------------- */
@@ -25,10 +24,10 @@ const api = DebugConfig.useFixtures ? FixtureAPI : API.create()
 /* ------------- Connect Types To Sagas ------------- */
 
 export default function * root () {
-  yield fork(loginFlow)
+  yield fork(connectSaga)
+  yield fork(loginSaga)
   yield [
     takeLatest(StartupTypes.STARTUP, startup),
-    takeLatest(GithubTypes.USER_REQUEST, getUserAvatar, api),
-    takeLatest(GamesparksTypes.START_WEBSOCKET, connect)
+    takeLatest(GithubTypes.USER_REQUEST, getUserAvatar, api)
   ]
 }
