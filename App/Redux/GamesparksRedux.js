@@ -11,7 +11,7 @@ const { Types, Creators } = createActions({
   gamesparksConnected: ['sessionId'],
   websocketSend: ['data', 'onResponse'],
   websocketClosed: null,
-  setEndpoint: ['env', 'url']
+  setEndpoint: ['env', 'uri']
 })
 export const GamesparksTypes = Types
 export default Creators
@@ -56,8 +56,8 @@ export const disconnected = (state) => state.merge({
   session: null
 })
 
-export const setUrl = (state, { env, url }) => state.merge({
-  endpoints: Object.assign({}, state.endpoints, { [env]: url })
+export const setUri = (state, { env, uri }) => state.merge({
+  endpoints: Object.assign({}, state.endpoints, { [env]: uri })
 })
 
 export const reducer = createReducer(INITIAL_STATE, {
@@ -66,7 +66,7 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.START_WEBSOCKET]: start,
   [Types.GAMESPARKS_CONNECTED]: connected,
   [Types.WEBSOCKET_CLOSED]: disconnected,
-  [Types.SET_ENDPOINT]: setUrl
+  [Types.SET_ENDPOINT]: setUri
 })
 
 /* Handlers ------------------------------ */
