@@ -30,6 +30,18 @@ export const INITIAL_STATE = Immutable({
   session: null
 })
 
+/* Selectors ----------------------------- */
+
+export const sdkStatus = state => ({
+  initializing: state.gamesparks.initializing,
+  connected: state.gamesparks.connected
+})
+
+export const sdkConfig = state => ({
+  endpoints: state.gamesparks.endpoints,
+  secret: state.gamesparks.secret
+})
+
 /* Reducers ------------------------------ */
 
 export const logger = (state, { LOG }) => {
@@ -50,7 +62,7 @@ export const connected = (state, { sessionId }) => state.merge({
   session: sessionId
 })
 
-export const disconnected = (state) => state.merge({
+export const disconnected = state => state.merge({
   initializing: false,
   connected: false,
   session: null

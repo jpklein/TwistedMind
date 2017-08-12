@@ -2,12 +2,10 @@
 import CryptoJS from 'crypto-js'
 import { eventChannel } from 'redux-saga'
 import { call, put, race, select, take } from 'redux-saga/effects'
-import Actions, { GamesparksTypes, INITIAL_STATE } from '../Redux/GamesparksRedux.js'
+import Actions, { GamesparksTypes, INITIAL_STATE, sdkStatus, sdkConfig } from '../Redux/GamesparksRedux.js'
 import LoginActions from '../Redux/LoginRedux.js'
 
-export const sdkStatus = state => state.gamesparks
-
-// @todo define connectionFlow() to manage network connection/reconnection/error reporting
+// @todo handle network reconnection/error reporting
 export function * hasGamesparksConnection () {
   let sdkIs = yield select(sdkStatus)
   if (sdkIs.connected === false) {
@@ -25,11 +23,6 @@ export function * hasGamesparksConnection () {
   }
   return true
 }
-
-export const sdkConfig = state => ({
-  endpoints: state.gamesparks.endpoints,
-  secret: state.gamesparks.secret
-})
 
 // attempts to login
 export function * connectSaga () {
