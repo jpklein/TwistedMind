@@ -28,12 +28,12 @@ export function * hasGamesparksConnection () {
 export function * connectSaga () {
   while (true) {
     const { env } = yield take(GamesparksTypes.START_WEBSOCKET)
-    const sdk = yield select(sdkConfig)
-    const url = sdk.endpoints[env] || INITIAL_STATE.endpoints[env]
+    const config = yield select(sdkConfig)
+    const url = config.endpoints[env] || INITIAL_STATE.endpoints[env]
     let shouldReconnect
     try {
       const socket = new WebSocket(url)
-      const channel = yield call(initSdk, socket, sdk.secret)
+      const channel = yield call(initSdk, socket, config.secret)
       while (true) {
         // @todo add internal listener to invalidate connection (request close)
         const { event } = yield race({
@@ -54,14 +54,14 @@ export function * connectSaga () {
   }
 }
 
-function initSdk (socket, secret) {
+export function initSdk (socket, secret) {
   return eventChannel(emit => {
     let authToken,
-      redirectUrl,
+      redirectUri,
       sessionId
     socket.onclose = (event) => {
-      if (redirectUrl) {
-        emit({ type: 'redirected', url: redirectUrl })
+      if (redirectUri) {
+        emit({ type: 'redirected', uri: redirectUri })
       }
       emit({ type: 'closed' })
     }
@@ -80,7 +80,7 @@ function initSdk (socket, secret) {
         authToken = msg['authToken']
       }
       if (msg['connectUrl']) {
-        redirectUrl = msg['connectUrl']
+        redirectUri = msg['connectUrl']
       }
       if (msg['@class'] === '.AuthenticatedConnectResponse') {
         // handshaking
@@ -123,7 +123,7 @@ function initSdk (socket, secret) {
   })
 }
 
-function * transmitSaga (socket) {
+export function * transmitSaga (socket) {
   while (true) {
     const { data, onResponse } = yield take('WEBSOCKET_SEND')
     const requestId = (new Date()).getTime() + '_' + (++socket.requestCounter)
@@ -146,8 +146,8 @@ function getHandler (type) {
     log: function * (event) {
       return yield put(Actions.log(event))
     },
-    redirected: function * ({ env, url }) {
-      return yield put(Actions.setEndpoint(env, url))
+    redirected: function * ({ env, uri }) {
+      return yield put(Actions.setEndpoint(env, uri))
     },
     connected: function * ({ sessionId }) {
       return yield put(Actions.gamesparksConnected(sessionId))
