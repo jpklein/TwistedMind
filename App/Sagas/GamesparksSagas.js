@@ -13,13 +13,29 @@ export function * hasGamesparksConnection () {
     sdkIs = yield select(sdkStatus)
   }
   if (sdkIs.initializing === true) {
-    const status = yield race({
-      initialized: take(GamesparksTypes.GAMESPARKS_CONNECTED),
-      offline: take(GamesparksTypes.WEBSOCKET_CLOSED)
-    })
-    if (status.offline) {
-      return false
-    }
+    let status = {}
+    let wasRedirected = false
+    let isReconnecting
+    do {
+      isReconnecting = false
+      status = yield race({
+        initialized: take(GamesparksTypes.GAMESPARKS_CONNECTED),
+        redirected: take(GamesparksTypes.SET_ENDPOINT),
+        offline: take(GamesparksTypes.WEBSOCKET_CLOSED)
+      })
+      if ('offline' in status) {
+        if (!wasRedirected) {
+          const config = yield select(sdkConfig)
+          const initialConfig = sdkConfig({ gamesparks: INITIAL_STATE })
+          if (JSON.stringify(config) === JSON.stringify(initialConfig)) {
+            return false
+          }
+          yield put(Actions.resetGamesparksConfig())
+        }
+        yield put(Actions.startWebsocket('preview'))
+        isReconnecting = true
+      }
+    } while ((wasRedirected = 'redirected' in status) || isReconnecting)
   }
   return true
 }
@@ -30,7 +46,6 @@ export function * connectSaga () {
     const { env } = yield take(GamesparksTypes.START_WEBSOCKET)
     const config = yield select(sdkConfig)
     const url = config.endpoints[env] || INITIAL_STATE.endpoints[env]
-    let shouldReconnect
     try {
       const socket = new WebSocket(url)
       const channel = yield call(initSdk, socket, config.secret)
@@ -42,14 +57,11 @@ export function * connectSaga () {
         })
         if (typeof event === 'object' && event.type) {
           const handle = getHandler(event.type)
-          const { type } = yield handle({ env: env, ...event })
-          shouldReconnect = type === 'SET_ENDPOINT'
+          yield handle({ env: env, ...event })
         }
       }
     } catch (e) {
-      if (shouldReconnect === true) {
-        yield put(Actions.startWebsocket(env))
-      }
+      // Restarts saga when close event taken from channel
     }
   }
 }
