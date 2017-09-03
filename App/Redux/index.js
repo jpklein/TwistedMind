@@ -9,7 +9,8 @@ export default () => {
     github: require('../Redux/GithubRedux.js').reducer,
     login: require('../Redux/LoginRedux.js').reducer,
     search: require('../Redux/SearchRedux.js').reducer,
-    gamesparks: require('../Redux/GamesparksRedux.js').reducer
+    gamesparks: require('../Redux/GamesparksRedux.js').reducer,
+    modal: require('../Redux/ModalRedux.js').reducer
   })
 
   return configureStore(rootReducer, rootSaga)
