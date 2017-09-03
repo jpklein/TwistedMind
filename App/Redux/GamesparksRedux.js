@@ -6,12 +6,12 @@ import Immutable from 'seamless-immutable'
 
 const { Types, Creators } = createActions({
   log: ['LOG'],
-  reset: null,
+  resetGamesparksConfig: null,
   startWebsocket: ['env'],
-  gamesparksConnected: ['sessionId'],
-  websocketSend: ['data', 'onResponse'],
+  setEndpoint: ['env', 'uri'],
   websocketClosed: null,
-  setEndpoint: ['env', 'uri']
+  gamesparksConnected: ['sessionId'],
+  websocketSend: ['data', 'onResponse']
 })
 export const GamesparksTypes = Types
 export default Creators
@@ -56,10 +56,8 @@ export const start = (state, { env }) => state.merge({
   initializing: true
 })
 
-export const connected = (state, { sessionId }) => state.merge({
-  initializing: false,
-  connected: true,
-  session: sessionId
+export const setUri = (state, { env, uri }) => state.merge({
+  endpoints: Object.assign({}, state.endpoints, { [env]: uri })
 })
 
 export const disconnected = state => state.merge({
@@ -68,17 +66,19 @@ export const disconnected = state => state.merge({
   session: null
 })
 
-export const setUri = (state, { env, uri }) => state.merge({
-  endpoints: Object.assign({}, state.endpoints, { [env]: uri })
+export const connected = (state, { sessionId }) => state.merge({
+  initializing: false,
+  connected: true,
+  session: sessionId
 })
 
 export const reducer = createReducer(INITIAL_STATE, {
   [Types.LOG]: logger,
-  [Types.RESET]: resetter,
+  [Types.RESET_GAMESPARKS_CONFIG]: resetter,
   [Types.START_WEBSOCKET]: start,
-  [Types.GAMESPARKS_CONNECTED]: connected,
+  [Types.SET_ENDPOINT]: setUri,
   [Types.WEBSOCKET_CLOSED]: disconnected,
-  [Types.SET_ENDPOINT]: setUri
+  [Types.GAMESPARKS_CONNECTED]: connected
 })
 
 /* Handlers ------------------------------ */

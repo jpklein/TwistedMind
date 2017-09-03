@@ -20,7 +20,7 @@ const MOCK_STATE = {
 // })
 
 test('resetter', () => {
-  const store = reducer(MOCK_STATE, Actions.reset())
+  const store = reducer(MOCK_STATE, Actions.resetGamesparksConfig())
 
   // @todo? deep comparison of state objects
   expect(store).toBe(INITIAL_STATE)
