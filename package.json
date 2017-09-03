@@ -69,6 +69,7 @@
     "ignite-vector-icons": "^1.0.0",
     "jest": "20.0.4",
     "jest-expo": "~18.0.0",
+    "mock-socket": "^7.0.0",
     "mockery": "^2.1.0",
     "react-addons-test-utils": "~15.4.1",
     "react-dom": "~15.4.1",
