@@ -10,6 +10,7 @@ import {
   LayoutAnimation
 } from 'react-native'
 import { connect } from 'react-redux'
+import AlertMessage from '../Components/AlertMessage.js'
 import LoginActions from '../Redux/LoginRedux.js'
 import styles from '../Containers/Styles/LoginScreenStyles.js'
 import { Images, Metrics } from '../Themes'
@@ -94,9 +95,12 @@ export class LoginScreen extends React.Component {
     const { fetching } = this.props
     const editable = !fetching
     const textInputStyle = editable ? styles.textInput : styles.textInputReadonly
+    const hasAlert = 'title' in this.props.alert
+    const alertTitle = hasAlert ? this.props.alert.title : ''
     return (
       <ScrollView contentContainerStyle={{justifyContent: 'center'}} style={[styles.container, {height: this.state.visibleHeight}]} keyboardShouldPersistTaps='always'>
         <Image source={Images.logo} style={[styles.topLogo, this.state.topLogo]} />
+        <AlertMessage show={hasAlert} title={alertTitle} />
         <View style={styles.form}>
           <View style={styles.row}>
             <Text style={styles.rowLabel}>Username</Text>
@@ -153,7 +157,8 @@ export class LoginScreen extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  fetching: state.login.fetching
+  fetching: state.login.fetching,
+  alert: state.modal.data
 })
 
 const mapDispatchToProps = dispatch => ({

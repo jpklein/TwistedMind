@@ -2,9 +2,11 @@ import { call, put, race, take } from 'redux-saga/effects'
 import GamesparksActions, { onAuthResponse } from '../Redux/GamesparksRedux.js'
 import { hasGamesparksConnection } from '../Sagas/GamesparksSagas.js'
 import { LoginTypes } from '../Redux/LoginRedux.js'
+import ModalActions from '../Redux/ModalRedux.js'
 
 export function * loginSaga () {
   while (true) {
+    yield put(ModalActions.showModal({ title: 'Alert Shown!' }))
     const { username, password } = yield take(LoginTypes.LOGIN_REQUEST)
     // @todo bounce attempts until timeout
     const connected = yield hasGamesparksConnection()
