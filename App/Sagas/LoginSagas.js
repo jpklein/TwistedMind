@@ -9,10 +9,12 @@ export function * loginSaga () {
     const { username, password } = yield take(LoginTypes.LOGIN_REQUEST)
     // @todo bounce attempts until timeout
     const connected = yield hasGamesparksConnection()
-    // if (!connected) {
+    if (!connected) {
       yield put(ModalActions.showModal({ title: 'Connection Error' }))
       continue
-    // }
+    } else {
+      yield take(ModalTypes.HIDE_MODAL)
+    }
     yield race({
       auth: call(login, username, password),
       alerted: take(ModalTypes.HIDE_MODAL),

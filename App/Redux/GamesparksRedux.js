@@ -42,6 +42,10 @@ export const sdkConfig = state => ({
   secret: state.gamesparks.secret
 })
 
+export const sdkSession = state => ({
+  session: state.gamesparks.session
+})
+
 /* Reducers ------------------------------ */
 
 export const logger = (state, { LOG }) => {

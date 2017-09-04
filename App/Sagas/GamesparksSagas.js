@@ -2,8 +2,9 @@
 import CryptoJS from 'crypto-js'
 import { eventChannel } from 'redux-saga'
 import { call, put, race, select, take } from 'redux-saga/effects'
-import Actions, { GamesparksTypes, INITIAL_STATE, sdkStatus, sdkConfig } from '../Redux/GamesparksRedux.js'
+import Actions, { GamesparksTypes, INITIAL_STATE, sdkStatus, sdkConfig, sdkSession } from '../Redux/GamesparksRedux.js'
 import LoginActions from '../Redux/LoginRedux.js'
+import ModalActions from '../Redux/ModalRedux.js'
 
 // @todo handle network reconnection/error reporting
 export function * hasGamesparksConnection () {
@@ -15,8 +16,8 @@ export function * hasGamesparksConnection () {
   if (sdkIs.initializing === true) {
     let status = {}
     let wasRedirected = false
-    let isReconnecting
-    do {
+    let isReconnecting = true
+    while ((wasRedirected = 'redirected' in status) || isReconnecting) {
       isReconnecting = false
       status = yield race({
         initialized: take(GamesparksTypes.GAMESPARKS_CONNECTED),
@@ -35,7 +36,12 @@ export function * hasGamesparksConnection () {
         yield put(Actions.startWebsocket('preview'))
         isReconnecting = true
       }
-    } while ((wasRedirected = 'redirected' in status) || isReconnecting)
+      // @todo remove from production
+      if ('initialized' in status) {
+        const { session } = yield select(sdkSession)
+        yield put(ModalActions.showModal({ title: 'Gamesparks Session ID: ' + session }))
+      }
+    }
   }
   return true
 }
@@ -137,7 +143,7 @@ export function initSdk (socket, secret) {
 
 export function * transmitSaga (socket) {
   while (true) {
-    const { data, onResponse } = yield take('WEBSOCKET_SEND')
+    const { data, onResponse } = yield take(GamesparksTypes.WEBSOCKET_SEND)
     const requestId = (new Date()).getTime() + '_' + (++socket.requestCounter)
     if (onResponse != null) {
       // assigns onResponse handler
