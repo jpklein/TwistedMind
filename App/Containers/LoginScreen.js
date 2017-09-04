@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react'
 import {
+  StyleSheet,
   View,
   ScrollView,
   Text,
@@ -9,10 +10,32 @@ import {
   Keyboard,
   LayoutAnimation
 } from 'react-native'
+import Modal from 'react-native-modalbox'
 import { connect } from 'react-redux'
 import LoginActions from '../Redux/LoginRedux.js'
 import styles from '../Containers/Styles/LoginScreenStyles.js'
+import ModalActions from '../Redux/ModalRedux.js'
 import { Images, Metrics } from '../Themes'
+
+const styles2 = StyleSheet.create({
+  wrapper: {
+    paddingTop: 50,
+    flex: 1
+  },
+  modal: {
+    height: 300,
+    width: 300
+  },
+  btn: {
+    margin: 10,
+    backgroundColor: '#3B5998',
+    padding: 10
+  },
+  text: {
+    color: 'black',
+    fontSize: 22
+  }
+})
 
 export class LoginScreen extends React.Component {
   static propTypes = {
@@ -34,6 +57,7 @@ export class LoginScreen extends React.Component {
       topLogo: { width: Metrics.screenWidth }
     }
     this.isAttempting = false
+    this.modalWillOpen = false
   }
 
   componentWillReceiveProps (newProps) {
@@ -49,6 +73,12 @@ export class LoginScreen extends React.Component {
     // TODO: Revisit this if Android begins to support - https://github.com/facebook/react-native/issues/3468
     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this.keyboardDidShow)
     this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this.keyboardDidHide)
+  }
+
+  componentDidUpdate () {
+    if (this.modalWillOpen) {
+      this.refs.modal.open()
+    }
   }
 
   componentWillUnmount () {
@@ -81,6 +111,12 @@ export class LoginScreen extends React.Component {
     this.props.attemptLogin(username, password)
   }
 
+  handleDismissModal = () => {
+    this.props.dismissAlert()
+    this.modalWillOpen = false
+    this.refs.modal.close()
+  }
+
   handleChangeUsername = (text) => {
     this.setState({ username: text })
   }
@@ -94,8 +130,23 @@ export class LoginScreen extends React.Component {
     const { fetching } = this.props
     const editable = !fetching
     const textInputStyle = editable ? styles.textInput : styles.textInputReadonly
+    if ('title' in this.props.alert) {
+      this.modalWillOpen = true
+    }
     return (
       <ScrollView contentContainerStyle={{justifyContent: 'center'}} style={[styles.container, {height: this.state.visibleHeight}]} keyboardShouldPersistTaps='always'>
+        <Modal
+          style={[styles2.modal, styles2.modal]}
+          position={'center'}
+          ref={'modal'}
+          swipeToClose>
+          <Text style={styles2.text}>{this.props.alert.title}</Text>
+          <TouchableOpacity style={styles.loginButtonWrapper} onPress={this.handleDismissModal}>
+            <View style={styles2.btn}>
+              <Text style={styles.loginText}>OK!</Text>
+            </View>
+          </TouchableOpacity>
+        </Modal>
         <Image source={Images.logo} style={[styles.topLogo, this.state.topLogo]} />
         <View style={styles.form}>
           <View style={styles.row}>
@@ -153,11 +204,13 @@ export class LoginScreen extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  fetching: state.login.fetching
+  fetching: state.login.fetching,
+  alert: state.modal.data
 })
 
 const mapDispatchToProps = dispatch => ({
-  attemptLogin: (username, password) => dispatch(LoginActions.loginRequest(username, password))
+  attemptLogin: (username, password) => dispatch(LoginActions.loginRequest(username, password)),
+  dismissAlert: () => dispatch(ModalActions.hideModal())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen)
