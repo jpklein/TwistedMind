@@ -2,9 +2,8 @@
 import CryptoJS from 'crypto-js'
 import { eventChannel } from 'redux-saga'
 import { call, put, race, select, take } from 'redux-saga/effects'
-import Actions, { GamesparksTypes, INITIAL_STATE, sdkStatus, sdkConfig, sdkSession } from '../Redux/GamesparksRedux.js'
+import Actions, { GamesparksTypes, INITIAL_STATE, sdkStatus, sdkConfig } from '../Redux/GamesparksRedux.js'
 import LoginActions from '../Redux/LoginRedux.js'
-import ModalActions from '../Redux/ModalRedux.js'
 
 // @todo handle network reconnection/error reporting
 export function * hasGamesparksConnection () {
@@ -14,11 +13,11 @@ export function * hasGamesparksConnection () {
     sdkIs = yield select(sdkStatus)
   }
   if (sdkIs.initializing === true) {
-    let status = {}
+    let status
     let wasRedirected = false
-    let isReconnecting = true
-    while ((wasRedirected = 'redirected' in status) || isReconnecting) {
-      isReconnecting = false
+    let willReconnect
+    do {
+      willReconnect = false
       status = yield race({
         initialized: take(GamesparksTypes.GAMESPARKS_CONNECTED),
         redirected: take(GamesparksTypes.SET_ENDPOINT),
@@ -34,14 +33,9 @@ export function * hasGamesparksConnection () {
           yield put(Actions.resetGamesparksConfig())
         }
         yield put(Actions.startWebsocket('preview'))
-        isReconnecting = true
+        willReconnect = true
       }
-      // @todo remove from production
-      if ('initialized' in status) {
-        const { session } = yield select(sdkSession)
-        yield put(ModalActions.showModal({ title: 'Gamesparks Session ID: ' + session }))
-      }
-    }
+    } while ((wasRedirected = 'redirected' in status) || willReconnect)
   }
   return true
 }
