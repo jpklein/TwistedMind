@@ -2,6 +2,7 @@ import immutablePersistenceTransform from '../Services/ImmutablePersistenceTrans
 import { AsyncStorage } from 'react-native'
 import { INITIAL_STATE as SDK_DEFAULT } from '../Redux/GamesparksRedux.js'
 import { INITIAL_STATE as USER_DEFAULT } from '../Redux/LoginRedux.js'
+import { INITIAL_STATE as MODAL_DEFAULT } from '../Redux/ModalRedux.js'
 
 const ignoreGamesparksTransmitState = {
   in: raw => raw,
@@ -17,6 +18,9 @@ const ignoreGamesparksTransmitState = {
       state.fetching = USER_DEFAULT.fetching
       // @todo forces login after rehydrate?
       // state.authToken = USER_DEFAULT.authToken
+    } else if ('data' in state) {
+      // ignores modals from last session
+      state = MODAL_DEFAULT
     }
     return state
   }
