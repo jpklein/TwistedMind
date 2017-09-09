@@ -4,7 +4,7 @@ import Immutable from 'seamless-immutable'
 /* Types and Action Creators ------------- */
 
 const { Types, Creators } = createActions({
-  showModal: ['data'],
+  showModal: ['msg'],
   hideModal: null
   // @todo implements actions to handle responses?
   // confirmYes: null,
@@ -16,19 +16,32 @@ export default Creators
 /* Initial State ------------------------- */
 
 export const INITIAL_STATE = Immutable({
-  data: {}
+  curr: 0,
+  msgs: {}
 })
 
 /* Reducers ------------------------------ */
 
 // @todo handles stacked modals
-export const renderer = (state, { data }) => state.merge({
-  data: data
-})
+export const push = (state, { msg }) => {
+  const c = ++state.curr
+  return state.merge({
+    curr: c,
+    msgs: Object.assign({}, state.msgs, { [c]: msg })
+  })
+}
 
-export const resetter = state => INITIAL_STATE
+export const pop = state => {
+  let stack = Object.assign({}, state.msgs)
+  let c = state.curr
+  delete stack[c]
+  return state.merge({
+    curr: --c,
+    msgs: stack
+  })
+}
 
 export const reducer = createReducer(INITIAL_STATE, {
-  [Types.SHOW_MODAL]: renderer,
-  [Types.HIDE_MODAL]: resetter
+  [Types.SHOW_MODAL]: push,
+  [Types.HIDE_MODAL]: pop
 })

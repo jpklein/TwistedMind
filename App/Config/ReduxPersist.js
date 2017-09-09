@@ -18,7 +18,7 @@ const ignoreGamesparksTransmitState = {
       state.fetching = USER_DEFAULT.fetching
       // @todo forces login after rehydrate?
       // state.authToken = USER_DEFAULT.authToken
-    } else if ('data' in state) {
+    } else if ('msgs' in state) {
       // ignores modals from last session
       state = MODAL_DEFAULT
     }

@@ -130,23 +130,25 @@ export class LoginScreen extends React.Component {
     const { fetching } = this.props
     const editable = !fetching
     const textInputStyle = editable ? styles.textInput : styles.textInputReadonly
-    if ('title' in this.props.alert) {
+    if (this.props.modal) {
       this.modalWillOpen = true
     }
     return (
       <ScrollView contentContainerStyle={{justifyContent: 'center'}} style={[styles.container, {height: this.state.visibleHeight}]} keyboardShouldPersistTaps='always'>
-        <Modal
+
+        {this.modalWillOpen && <Modal
           style={[styles2.modal, styles2.modal]}
           position={'center'}
           ref={'modal'}
           swipeToClose>
-          <Text style={styles2.text}>{this.props.alert.title}</Text>
+          <Text style={styles2.text}>{this.props.modal.title}</Text>
           <TouchableOpacity style={styles.loginButtonWrapper} onPress={this.handleDismissModal}>
             <View style={styles2.btn}>
               <Text style={styles.loginText}>OK!</Text>
             </View>
           </TouchableOpacity>
-        </Modal>
+        </Modal>}
+
         <Image source={Images.logo} style={[styles.topLogo, this.state.topLogo]} />
         <View style={styles.form}>
           <View style={styles.row}>
@@ -205,7 +207,7 @@ export class LoginScreen extends React.Component {
 
 const mapStateToProps = state => ({
   fetching: state.login.fetching,
-  alert: state.modal.data
+  modal: state.modal['curr'] ? state.modal.msgs[state.modal.curr] : null
 })
 
 const mapDispatchToProps = dispatch => ({
