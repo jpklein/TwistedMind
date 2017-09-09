@@ -12,8 +12,6 @@ export function * loginSaga () {
     if (!connected) {
       yield put(ModalActions.showModal({ title: 'Connection Error' }))
       continue
-    } else {
-      yield take(ModalTypes.HIDE_MODAL)
     }
     yield race({
       auth: call(login, username, password),

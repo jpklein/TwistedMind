@@ -112,7 +112,7 @@ export class LoginScreen extends React.Component {
   }
 
   handleDismissModal = () => {
-    this.props.dismissAlert()
+    this.props.dismissModal()
     this.modalWillOpen = false
     this.refs.modal.close()
   }
@@ -210,7 +210,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   attemptLogin: (username, password) => dispatch(LoginActions.loginRequest(username, password)),
-  dismissAlert: () => dispatch(ModalActions.hideModal())
+  dismissModal: () => dispatch(ModalActions.hideModal())
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen)
