@@ -10,6 +10,7 @@ const ignoreGamesparksTransmitState = {
       // only rehydrates endpoint information
       state.initializing = SDK_DEFAULT.initializing
       state.connected = SDK_DEFAULT.connected
+      state.session = SDK_DEFAULT.session
     } else if ('username' in state) {
       // rehydrates user profile information
       state.error = USER_DEFAULT.error
