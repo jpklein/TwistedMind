@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react'
 import {
-  StyleSheet,
   View,
   ScrollView,
   Text,
@@ -13,29 +12,10 @@ import {
 import Modal from 'react-native-modalbox'
 import { connect } from 'react-redux'
 import LoginActions from '../Redux/LoginRedux.js'
-import styles from '../Containers/Styles/LoginScreenStyles.js'
+import ScreenCss from '../Containers/Styles/LoginScreenStyles.js'
 import ModalActions from '../Redux/ModalRedux.js'
+import ModalCss from '../Components/Styles/ModalStyles.js'
 import { Images, Metrics } from '../Themes'
-
-const styles2 = StyleSheet.create({
-  wrapper: {
-    paddingTop: 50,
-    flex: 1
-  },
-  modal: {
-    height: 300,
-    width: 300
-  },
-  btn: {
-    margin: 10,
-    backgroundColor: '#3B5998',
-    padding: 10
-  },
-  text: {
-    color: 'black',
-    fontSize: 22
-  }
-})
 
 export class LoginScreen extends React.Component {
   static propTypes = {
@@ -129,30 +109,31 @@ export class LoginScreen extends React.Component {
     const { username, password } = this.state
     const { fetching } = this.props
     const editable = !fetching
-    const textInputStyle = editable ? styles.textInput : styles.textInputReadonly
+    const textInputStyle = editable ? ScreenCss.textInput : ScreenCss.textInputReadonly
     if (this.props.modal) {
       this.modalWillOpen = true
     }
     return (
-      <ScrollView contentContainerStyle={{justifyContent: 'center'}} style={[styles.container, {height: this.state.visibleHeight}]} keyboardShouldPersistTaps='always'>
+      <ScrollView contentContainerStyle={{justifyContent: 'center'}} style={[ScreenCss.container, {height: this.state.visibleHeight}]} keyboardShouldPersistTaps='always'>
 
         {this.modalWillOpen && <Modal
-          style={[styles2.modal, styles2.modal]}
+          style={ModalCss.modal}
           position={'center'}
           ref={'modal'}
           swipeToClose>
-          <Text style={styles2.text}>{this.props.modal.title}</Text>
-          <TouchableOpacity style={styles.loginButtonWrapper} onPress={this.handleDismissModal}>
-            <View style={styles2.btn}>
-              <Text style={styles.loginText}>OK!</Text>
+          <Text style={ModalCss.text}>{this.props.modal.title}</Text>
+          <Text style={ModalCss.message}>{this.props.modal.text}</Text>
+          <TouchableOpacity style={ScreenCss.loginButtonWrapper} onPress={this.handleDismissModal}>
+            <View style={ModalCss.btn}>
+              <Text style={ScreenCss.loginText}>{this.props.modal.dismiss}</Text>
             </View>
           </TouchableOpacity>
         </Modal>}
 
-        <Image source={Images.logo} style={[styles.topLogo, this.state.topLogo]} />
-        <View style={styles.form}>
-          <View style={styles.row}>
-            <Text style={styles.rowLabel}>Username</Text>
+        <Image source={Images.logo} style={[ScreenCss.topLogo, this.state.topLogo]} />
+        <View style={ScreenCss.form}>
+          <View style={ScreenCss.row}>
+            <Text style={ScreenCss.rowLabel}>Username</Text>
             <TextInput
               ref='username'
               style={textInputStyle}
@@ -168,8 +149,8 @@ export class LoginScreen extends React.Component {
               placeholder='Username' />
           </View>
 
-          <View style={styles.row}>
-            <Text style={styles.rowLabel}>Password</Text>
+          <View style={ScreenCss.row}>
+            <Text style={ScreenCss.rowLabel}>Password</Text>
             <TextInput
               ref='password'
               style={textInputStyle}
@@ -186,15 +167,15 @@ export class LoginScreen extends React.Component {
               placeholder='Password' />
           </View>
 
-          <View style={[styles.loginRow]}>
-            <TouchableOpacity style={styles.loginButtonWrapper} onPress={this.handlePressLogin}>
-              <View style={styles.loginButton}>
-                <Text style={styles.loginText}>Sign In</Text>
+          <View style={[ScreenCss.loginRow]}>
+            <TouchableOpacity style={ScreenCss.loginButtonWrapper} onPress={this.handlePressLogin}>
+              <View style={ScreenCss.loginButton}>
+                <Text style={ScreenCss.loginText}>Sign In</Text>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.loginButtonWrapper} onPress={() => this.props.navigation.goBack()}>
-              <View style={styles.loginButton}>
-                <Text style={styles.loginText}>Cancel</Text>
+            <TouchableOpacity style={ScreenCss.loginButtonWrapper} onPress={() => this.props.navigation.goBack()}>
+              <View style={ScreenCss.loginButton}>
+                <Text style={ScreenCss.loginText}>Cancel</Text>
               </View>
             </TouchableOpacity>
           </View>

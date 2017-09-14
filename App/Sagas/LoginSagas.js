@@ -10,7 +10,11 @@ export function * loginSaga () {
     // @todo bounce attempts until timeout
     const connected = yield hasGamesparksConnection()
     if (!connected) {
-      yield put(ModalActions.showModal({ title: 'Connection Error' }))
+      yield put(ModalActions.showModal({
+        title: 'Connection Error',
+        text: 'Please check your Internet connection and try again.',
+        dismiss: 'OK!'
+      }))
       continue
     }
     yield race({
