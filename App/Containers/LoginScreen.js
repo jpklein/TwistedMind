@@ -121,9 +121,9 @@ export class LoginScreen extends React.Component {
           position={'center'}
           ref={'modal'}
           swipeToClose>
-          <Text style={ModalCss.text}>{this.props.modal.title}</Text>
+          <Text style={ModalCss.title}>{this.props.modal.title}</Text>
           <Text style={ModalCss.message}>{this.props.modal.text}</Text>
-          <TouchableOpacity style={ScreenCss.loginButtonWrapper} onPress={this.handleDismissModal}>
+          <TouchableOpacity style={ModalCss.btnWrapper} onPress={this.handleDismissModal}>
             <View style={ModalCss.btn}>
               <Text style={ScreenCss.loginText}>{this.props.modal.dismiss}</Text>
             </View>
