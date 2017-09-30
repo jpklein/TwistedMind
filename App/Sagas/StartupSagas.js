@@ -5,11 +5,11 @@ import GithubActions from '../Redux/GithubRedux.js'
 import LoggedInActions, { isLoggedIn } from '../Redux/LoginRedux.js'
 
 // exported to make available for tests
-export const selectAvatar = (state) => state.github.avatar
-export const selectLoggedInStatus = (state) => isLoggedIn(state.login)
+export const selectAvatar = state => state.github.avatar
+export const selectLoggedInStatus = state => isLoggedIn(state.login)
 
 // process STARTUP actions
-export function * startup (action) {
+export const startup = function * (action) {
   const avatar = yield select(selectAvatar)
   // only get if we don't have it yet
   if (!is(String, avatar)) {

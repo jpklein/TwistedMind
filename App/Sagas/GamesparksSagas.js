@@ -6,7 +6,7 @@ import Actions, { GamesparksTypes, INITIAL_STATE, sdkStatus, sdkConfig } from '.
 import LoginActions from '../Redux/LoginRedux.js'
 
 // @todo handle network reconnection/error reporting
-export function * hasGamesparksConnection () {
+export const hasGamesparksConnection = function * () {
   let sdkIs = yield select(sdkStatus)
   if (sdkIs.connected === false) {
     yield put(Actions.startWebsocket('preview'))
@@ -41,7 +41,7 @@ export function * hasGamesparksConnection () {
 }
 
 // attempts to login
-export function * connectSaga () {
+export const connectSaga = function * () {
   while (true) {
     const { env } = yield take(GamesparksTypes.START_WEBSOCKET)
     const config = yield select(sdkConfig)
@@ -66,7 +66,7 @@ export function * connectSaga () {
   }
 }
 
-export function initSdk (socket, secret) {
+export const initSdk = (socket, secret) => {
   return eventChannel(emit => {
     let authToken,
       redirectUri,
@@ -135,7 +135,7 @@ export function initSdk (socket, secret) {
   })
 }
 
-export function * transmitSaga (socket) {
+export const transmitSaga = function * (socket) {
   while (true) {
     const { data, onResponse } = yield take(GamesparksTypes.WEBSOCKET_SEND)
     const requestId = (new Date()).getTime() + '_' + (++socket.requestCounter)
@@ -153,7 +153,7 @@ export function * transmitSaga (socket) {
   }
 }
 
-function getHandler (type) {
+const getHandler = type => {
   const handlers = {
     log: function * (event) {
       return yield put(Actions.log(event))
