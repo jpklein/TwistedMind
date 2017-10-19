@@ -2,6 +2,6 @@
   "name": "TwistedMindApp",
   "displayName": "TwistedMindApp",
   "expo": {
-    "sdkVersion": "18.0.0"
+    "sdkVersion": "22.0.0"
   }
 }
