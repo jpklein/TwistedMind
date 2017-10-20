@@ -1,7 +1,8 @@
 const type = {
-  base: 'Avenir-Book',
-  bold: 'Avenir-Black',
-  emphasis: 'HelveticaNeue-Italic'
+  // @todo https://docs.expo.io/versions/latest/guides/using-custom-fonts.html
+  base: 'sans-serif', // 'Avenir-Book',
+  bold: 'sans-serif', // 'Avenir-Black',
+  emphasis: 'sans-serif' // 'HelveticaNeue-Italic'
 }
 
 const size = {
