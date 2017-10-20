@@ -1,15 +1,16 @@
 import { Platform, StatusBar } from 'react-native'
 import { StackNavigator } from 'react-navigation'
 import HomeScreen from '../Containers/HomeScreen'
-import LoginScreen from '../Containers/LoginScreen'
+import PlayScreen from '../Containers/PlayScreen'
 
 // Manifest of possible screens
 export default StackNavigator({
   HomeScreen: { screen: HomeScreen },
-  LoginScreen: {
-    screen: LoginScreen,
-    navigationOptions: { title: 'Login' }
-  }
+  PlayScreen: { screen: PlayScreen }
+  // LoginScreen: {
+  //   screen: LoginScreen,
+  //   navigationOptions: { title: 'Login' }
+  // }
 }, {
   // Default config for all screens
   cardStyle: {
