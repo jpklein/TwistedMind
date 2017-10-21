@@ -35,7 +35,7 @@ const css = StyleSheet.create({
   },
   just: {
     paddingTop: 10,
-    textAlign: 'justify'
+    textAlign: 'justify' // justify not supported on android
   },
   clue: {
     fontStyle: 'italic',
