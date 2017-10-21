@@ -4,6 +4,7 @@ import { Metrics, Colors, Fonts } from '../../Themes/'
 export default StyleSheet.create({
   container: {
     flex: 1,
+    paddingHorizontal: 5,
     backgroundColor: Colors.snow
   },
   headerText: {
