@@ -7,10 +7,22 @@ import SelectScreen from '../Containers/SelectScreen'
 
 // Manifest of possible screens
 export default StackNavigator({
-  HomeScreen: { screen: HomeScreen },
-  PlayScreen: { screen: PlayScreen },
-  SelectScreen: { screen: SelectScreen },
-  LearnScreen: { screen: LearnScreen }
+  HomeScreen: {
+    screen: HomeScreen,
+    navigationOptions: { header: null }
+  },
+  PlayScreen: {
+    screen: PlayScreen,
+    navigationOptions: { header: null }
+  },
+  SelectScreen: {
+    screen: SelectScreen,
+    navigationOptions: { header: null }
+  },
+  LearnScreen: {
+    screen: LearnScreen,
+    navigationOptions: { title: 'HOW TO PLAY' }
+  }
   // LoginScreen: {
   //   screen: LoginScreen,
   //   navigationOptions: { title: 'Login' }
@@ -20,6 +32,6 @@ export default StackNavigator({
   cardStyle: {
     paddingTop: Platform.OS === 'ios' ? 0 : StatusBar.currentHeight
   },
-  headerMode: 'none',
+  headerMode: 'screen',
   initialRouteName: 'HomeScreen'
 })

@@ -1,17 +1,11 @@
 import React from 'react'
-import { Button, StyleSheet, ScrollView, Text } from 'react-native'
+import { ScrollView, StyleSheet, Text } from 'react-native'
 import styles from '../Containers/Styles/DefaultScreenStyle'
 
 class LearnScreen extends React.Component {
   render () {
-    const { goBack } = this.props.navigation
     return (
       <ScrollView style={styles.container}>
-        <Button
-          onPress={() => goBack()}
-          title='Back'
-        />
-        <Text style={styles.h2}>HOW TO PLAY</Text>
         <Text style={[css.txt, css.just]}>Each game includes 10 clues for you to solve. Each clue is a sentence that contains one or more consecutive ‘keywords’. We don’t tell you which words are the keywords, but we do tell you how many there are. By re-arranging all the letters in the keyword(s), you can make a <Text style={{fontWeight: 'bold', fontStyle: 'italic'}}>single-word</Text> anagram that solves the clue.</Text>
         <Text style={[css.txt, css.just, css.br]}>Here’s a simple clue with a single keyword:</Text>
         <Text style={[css.clue, css.br]}>The cast of the play includes several felines.</Text>
