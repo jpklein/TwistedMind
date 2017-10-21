@@ -2,11 +2,13 @@ import { Platform, StatusBar } from 'react-native'
 import { StackNavigator } from 'react-navigation'
 import HomeScreen from '../Containers/HomeScreen'
 import PlayScreen from '../Containers/PlayScreen'
+import SelectScreen from '../Containers/SelectScreen'
 
 // Manifest of possible screens
 export default StackNavigator({
   HomeScreen: { screen: HomeScreen },
-  PlayScreen: { screen: PlayScreen }
+  PlayScreen: { screen: PlayScreen },
+  SelectScreen: { screen: SelectScreen }
   // LoginScreen: {
   //   screen: LoginScreen,
   //   navigationOptions: { title: 'Login' }
