@@ -1,6 +1,7 @@
 import { Platform, StatusBar } from 'react-native'
 import { StackNavigator } from 'react-navigation'
 import HomeScreen from '../Containers/HomeScreen'
+import LearnScreen from '../Containers/LearnScreen'
 import PlayScreen from '../Containers/PlayScreen'
 import SelectScreen from '../Containers/SelectScreen'
 
@@ -8,7 +9,8 @@ import SelectScreen from '../Containers/SelectScreen'
 export default StackNavigator({
   HomeScreen: { screen: HomeScreen },
   PlayScreen: { screen: PlayScreen },
-  SelectScreen: { screen: SelectScreen }
+  SelectScreen: { screen: SelectScreen },
+  LearnScreen: { screen: LearnScreen }
   // LoginScreen: {
   //   screen: LoginScreen,
   //   navigationOptions: { title: 'Login' }
