@@ -1,4 +1,4 @@
-# ignite-example-login
+# TwistedMind
 This is an example [Ignited](https://infinite.red/ignite) app that shows how to integrate a login screen with redux-aware react navigation.
 
 ## Installation and Usage
