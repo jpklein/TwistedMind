@@ -15,6 +15,10 @@ class HomeScreen extends React.Component {
           onPress={() => navigate('PlayScreen')}
           title='Continue last game'
         />
+        <Button
+          onPress={() => navigate('SelectScreen')}
+          title='Select a different game'
+        />
       </View>
     )
   }
