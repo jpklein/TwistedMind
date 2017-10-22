@@ -1,8 +1,14 @@
-const type = {
-  // @todo https://docs.expo.io/versions/latest/guides/using-custom-fonts.html
-  base: 'sans-serif', // 'Avenir-Book',
-  bold: 'sans-serif', // 'Avenir-Black',
-  emphasis: 'sans-serif' // 'HelveticaNeue-Italic'
+import { Platform } from 'react-native'
+
+// @todo https://docs.expo.io/versions/latest/guides/using-custom-fonts.html
+const type = Platform.OS === 'android' ? {
+  base: 'sans-serif',
+  bold: 'sans-serif',
+  emphasis: 'sans-serif'
+} : {
+  base: 'Avenir-Book',
+  bold: 'Avenir-Black',
+  emphasis: 'HelveticaNeue-Italic'
 }
 
 const size = {
