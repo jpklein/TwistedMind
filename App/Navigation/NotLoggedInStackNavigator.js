@@ -17,7 +17,7 @@ export default StackNavigator({
   },
   SelectScreen: {
     screen: SelectScreen,
-    navigationOptions: { header: null }
+    navigationOptions: { title: 'MY GAMES' }
   },
   LearnScreen: {
     screen: LearnScreen,
