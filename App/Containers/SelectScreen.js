@@ -7,6 +7,7 @@ class SelectScreen extends React.Component {
   games = [
     {
       id: 1, // @todo populates id chip background using gravatar
+      label: 'A very good place to start',
       category: 'beginner',
       level: 'junior',
       status: 'new', // @todo displays status CTA like app store
