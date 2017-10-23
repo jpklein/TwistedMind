@@ -1,5 +1,6 @@
+import CryptoJS from 'crypto-js'
 import React from 'react'
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native'
 import styles from '../Containers/Styles/DefaultScreenStyle'
 
 class SelectScreen extends React.Component {
@@ -16,13 +17,18 @@ class SelectScreen extends React.Component {
   ]
 
   render () {
+    let getHash = ({ id }) => CryptoJS.MD5(`game-${id}@twisted-mind.com`)
+    let getResource = hash => `https://www.gravatar.com/avatar/${hash}?d=identicon`
     // @todo wraps cta in Button
     return (
       <ScrollView style={styles.container}>
         <View style={css.cards}>
           {this.games.map(game => {
+            imageUri = getResource(getHash(game))
+            // return <Text>{JSON.stringify(game.image)}</Text>
             return (
               <View key={game.id} style={css.card}>
+                <Image source={{uri: imageUri}} style={css.img} />
                 <View style={css.txt}>
                   <Text>{game.category}</Text>
                   <Text style={styles.h1}>{game.label}</Text>
@@ -53,7 +59,10 @@ const css = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 5
   },
-  img: null,
+  img: {
+    width: 50,
+    height: 50
+  },
   txt: {
     flex: 1
   },
